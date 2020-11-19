@@ -1,7 +1,7 @@
 # Проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Alexandra Kuchynskaya](https://up.htmlacademy.ru/ecmascript/13/user/146257).
-* Наставник: `Неизвестно`.
+* Наставник: [Кирилл Коломин](https://htmlacademy.ru/profile/id633235).
 
 ---
 
