@@ -8,12 +8,13 @@ import {createPointTripTemplate} from "./view/point-trip.js";
 import {createEditingPointTemplate} from "./view/edit-point.js";
 import {generateTripPoint} from "./mock/task.js";
 
+
 const TRIP_COUNT = 20;
 // конструктор array прнимает кол-во параметров которых должно быть создано. Они создаются пустыми
 // элементы надо заполнить, вызываем метод fill, который заполнит все элементы каким-то значением undefined
 // нужно получить новый массив, элементами которого будут эти 20 объектов с описанием точки маршрута
 // generateTripPoint будет вызываться для каждого из 20 элемента массива
-const trips = new Array(TRIP_COUNT).fill().map(generateTripPoint);
+const trips = new Array(TRIP_COUNT).fill().map((el, index) => generateTripPoint(index));
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -36,4 +37,3 @@ for (let i = 1; i < TRIP_COUNT; i++) {
   render(tripEventsList, createPointTripTemplate(trips[i]), `beforeend`);
 }
 render(tripEventsList, createEditingPointTemplate(trips[0]), `beforeend`);
-

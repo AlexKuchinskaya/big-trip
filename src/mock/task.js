@@ -1,10 +1,52 @@
-import dayjs from "dayjs";
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
+// import dayjs from "dayjs";
+import {generateTripPointDates} from "./date-generation";
+import {getRandomInteger, getRandomNumberOfElements} from "../utils.js";
 
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
+const MAX_NUMBER_SENTENCES = 5;
+const MIN_RANDOM_NUMBER = 1;
+const additionalOffers = [
+  {
+    type: `Uber`,
+    name: `Order Uber`,
+    price: 20
+  },
+  {
+    type: `luggage`,
+    name: `Add luggage`,
+    price: 50
+  },
+  {
+    type: `comfort`,
+    name: `Switch to comfort`,
+    price: 80
+  },
+  {
+    type: `car`,
+    name: `Rent a car`,
+    price: 200
+  },
+  {
+    type: `breakfast`,
+    name: `Add breakfast`,
+    price: 50
+  },
+  {
+    type: `tickets`,
+    name: `Book tickets`,
+    price: 40
+  },
+  {
+    type: `city`,
+    name: `Lunch in city`,
+    price: 30
+  },
+];
+
+// const timeDifference = {
+//   LessHour: 1,
+//   LessDay: 2,
+//   MoreDay: 3
+// };
 
 const generateTypeTripPoint = () => {
   const types = [
@@ -41,42 +83,57 @@ const generateDestinations = () => {
 const generatePrice = () => {
   return getRandomInteger(20, 200);
 };
-const generateDate = () => {
-  const maxDaysGap = 7;
-  const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
+// const generateDate = () => {
+//   const maxDaysGap = 7;
+//   const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
 
-  return dayjs().add(daysGap, `day`).toDate();
-  // return dayjs() - содержит текущую дату
-  // toDate(); вернет нам нормальный объект типа date
-};
+//   return dayjs().add(daysGap, `day`).toDate();
+//   // return dayjs() - содержит текущую дату
+//   // toDate(); вернет нам нормальный объект типа date
+// };
 
-const generateTime = () => {
-  const minHour = 0;
-  const maxHour = 23;
-  const minMinute = 0;
-  const maxMinute = 59;
-  const randomHour = getRandomInteger(minHour, maxHour);
-  const randomMinute = getRandomInteger(minMinute, maxMinute);
-  return dayjs(`${randomHour}.${randomMinute}`).format(`HH:mm`);
+// const generateTime = () => {
+//   const minHour = 0;
+//   const maxHour = 23;
+//   const minMinute = 0;
+//   const maxMinute = 59;
+//   const minDay = 1;
+//   const maxDay = 31;
+//   const randomHourStart = getRandomInteger(minHour, maxHour - 12);
+//   const randomHourEnd = getRandomInteger(minHour + 12, maxHour);
+//   const randomMinuteStart = getRandomInteger(minMinute, maxMinute);
+//   const randomMinuteEnd = getRandomInteger(minMinute, maxMinute);
 
-// const timeEnd = dayjs(`${randomHour}.${randomMinute}`).format(`HH:mm`);
-// const timeBeginning = dayjs(`${randomHour}.${randomMinute}`).format(`HH:mm`);
-// if (timeEnd != timeBeginning) {
-//   const timeDifference = timeEnd.diff(timeBeginning, 'minute')
-//     if (dayjs(timeDifference).isBefore('1', 'hour')) {
-//       return dayjs(`${timeDifference}`).format(`m`);
+
+//   const randomSituation = getRandomInteger(1, 3);
+//   const startTime = dayjs(`${randomHourStart}.${randomMinuteStart}`).date(getRandomInteger(minDay, maxDay - 15));
+//   const endTime = dayjs().hour(`${randomHourEnd}`);
+
+//   const getTimeDifference = () => {
+//     if (randomSituation === timeDifference.LessHour) {
+//       return `${endTime.diff(startTime, `minute`)}M`;
 //     }
-//     if (more than twenty-four hours)
-//     if (less than twenty-four hours )
-// // }
-};
+//     if (randomSituation === timeDifference.LessDay) {
+//       const timeDifferenceHour = `${endTime.diff(startTime, `hour`)}H`;
+//       const timeDifferenceMinute = `${endTime.diff(startTime, `minute`)}M`;
+//       return `${timeDifferenceHour} ${timeDifferenceMinute}`;
+//     }
+//     if (randomSituation === timeDifference.MoreDay) {
+//       const timeDifferenceDay = `${endTime.diff(startTime, `day`)}D`;
+//       const timeDifferenceHour = `${endTime.diff(startTime, `hour`)}H`;
+//       const timeDifferenceMinute = `${endTime.diff(startTime, `minute`)}M`;
+//       return `${timeDifferenceDay} ${timeDifferenceHour} ${timeDifferenceMinute}`;
+//     }
+//   };
+//   return {
+//     // startTime: startTime.format(`HH:mm`),
+//     // endTime: endTime.format(`HH:mm`),
+//     startTime,
+//     endTime,
+//     durationTrip: getTimeDifference()
+//   };
+// };
 
-// Время маршрута отображается в формате начало — окончание (например, «10:30 — 11:00»). Формат продолжительности нахождения в точке маршрута зависит от длительности:
-
-// Менее часа: минуты (например, 23M);
-// Менее суток: часы минуты (например, 02H 44M или 12H 00M, если минуты равны нулю);
-// Более суток: дни часы минуты (например, 01D 02H 30M или 07D 00H 00M, если часы и/или минуты равны нулю).
-// // создание новой сущности точка маршрута
 
 const generateInformationOfDestinations = () => {
   const information = [
@@ -92,46 +149,26 @@ const generateInformationOfDestinations = () => {
     `Nunc fermentum tortor ac porta dapibus.`,
     `In rutrum ac purus sit amet tempus.`
   ];
-  let randomSentences = [];
-  for (let i = 0; i < 5; i++) {
-    randomSentences.push(information[getRandomInteger(1, information.length)]);
-  }
+  const randomSentences = getRandomNumberOfElements(information, MIN_RANDOM_NUMBER, MAX_NUMBER_SENTENCES);
   return randomSentences;
 };
 
-const generateOfferType = () => {
-  const additionalOfferName = [
-    `Order Uber`,
-    `Add luggage`,
-    `Switch to comfort`,
-    `Rent a car`,
-    `Add breakfast`,
-    `Book tickets`,
-    `Lunch in city`
-  ];
-  const randomIndex = getRandomInteger(0, additionalOfferName.length - 1);
-
-  return additionalOfferName[randomIndex];
-};
-
 const generateDestinationPhotos = () => {
-  // return `http://picsum.photos/248/152?${getRandomInteger(1, 93)}`;
   let photos = [];
   for (let i = 0; i < getRandomInteger(1, 6); i++) {
     photos.push(`http://picsum.photos/248/152?${getRandomInteger(1, 1000)}`);
   }
   return photos;
 };
-export const generateTripPoint = () => {
+export const generateTripPoint = (index) => {
+  const {startDate, endDate} = generateTripPointDates(index);
   return {
     typeTripPoint: generateTypeTripPoint(),
     destination: generateDestinations(),
-    date: generateDate(),
-    time: generateTime(), // записывает только одно время, как сделать два
+    startDate,
+    endDate,
     price: generatePrice(),
-    additionalOptions: {
-      offerName: generateOfferType()
-    },
+    additionalOptions: additionalOffers,
     informationDestination: generateInformationOfDestinations(),
     destinationPhotos: generateDestinationPhotos(),
     isFavorite: Boolean(getRandomInteger(0, 1))

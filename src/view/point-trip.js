@@ -1,33 +1,43 @@
-import dayjs from "dayjs";
+import {formatTime, formatTimeDifferenceBetweenDates, formatDate} from "./date-formatting";
+import {getRandomExtraOffersFromZeroToFive} from "../utils.js";
+
 export const createPointTripTemplate = (pointTrip) => {
-  const {typeTripPoint, destination, date, price, additionalOptions: {offerName}, isFavorite} = pointTrip;
-  const tripDate = dayjs(date).format(`MMM D`);
+  const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
+  const randomAddiotionalOptions = getRandomExtraOffersFromZeroToFive(additionalOptions);
+  const createExtraOffersListItem = () => {
+    if (randomAddiotionalOptions.length !== 0) {
+      return randomAddiotionalOptions.map((randomAddiotionalOption) =>
+        `<li class="event__offer">
+          <span class="event__offer-title">${randomAddiotionalOption.name}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${randomAddiotionalOption.price}</span>
+        </li>`).join(``);
+    } else {
+      return ``;
+    }
+  };
   const favoriteClassName = isFavorite ? `` : `event__favorite-btn--active`;
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="2019-03-18">${tripDate}</time>
+      <time class="event__date" datetime="${startDate.format()}">${formatDate(startDate)}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${typeTripPoint}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${typeTripPoint} ${destination}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="2019-03-18T10:30">10:30</time>
+          <time class="event__start-time" datetime="${startDate.format()}">${formatTime(startDate)}</time>
           &mdash;
-          <time class="event__end-time" datetime="2019-03-18T11:00">11:00</time>
+          <time class="event__end-time" datetime="${endDate.format()}">${formatTime(endDate)}</time>
         </p>
-        <p class="event__duration">30M</p>
+        <p class="event__duration">${formatTimeDifferenceBetweenDates(startDate, endDate)}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${price}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        <li class="event__offer">
-          <span class="event__offer-title">${offerName}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
-        </li>
+        ${createExtraOffersListItem()}
       </ul>
       <button class="event__favorite-btn ${favoriteClassName}" type="button">
         <span class="visually-hidden">Add to favorite</span>
