@@ -112,8 +112,6 @@ const generateDestinationPhotos = () => {
   return photos;
 };
 export const generateTripPoint = (index) => {
-  const addOpt = generateAdditionalOptions();
-  console.log(`addOpt`, addOpt) // генерируется undefined
   const {startDate, endDate} = generateTripPointDates(index);
   return {
     typeTripPoint: generateTypeTripPoint(),
