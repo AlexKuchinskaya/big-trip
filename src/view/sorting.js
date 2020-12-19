@@ -1,3 +1,4 @@
+import {createElement} from "../utils.js";
 const sortingElements = [
   {
     id: `day`,
@@ -42,8 +43,29 @@ const crateTripSortingElements = (currentSortingElement) => {
   </div>`).join(``);
 };
 
-export const createSortingTripTemplate = (currentSortingElement) => {
+const createSortingTripTemplate = (currentSortingElement) => {
   return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
   ${crateTripSortingElements(currentSortingElement)}
   </form>`;
 };
+
+export default class SortingTrip {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSortingTripTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

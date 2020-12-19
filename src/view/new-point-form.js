@@ -1,6 +1,7 @@
 import {formatDatePointEditing} from "./date-formatting";
+import {createElement} from "../utils.js";
 
-export const createNewPointFormTemplate = (pointTrip) => {
+const createNewPointFormTemplate = (pointTrip) => {
   const {additionalOptions, startDate, endDate, typeTripPoint, destination, informationDestination, destinationPhotos} = pointTrip;
   const generateImageTemplate = () => {
     let images = [];
@@ -143,3 +144,25 @@ export const createNewPointFormTemplate = (pointTrip) => {
     </form>
   </li>`;
 };
+
+export default class NewTripPointForm {
+  constructor(tripData) {
+    this._element = null;
+    this._tripData = tripData;
+  }
+
+  getTemplate() {
+    return createNewPointFormTemplate(this._tripData);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

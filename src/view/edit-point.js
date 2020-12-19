@@ -1,5 +1,6 @@
 import {formatDatePointEditing} from "./date-formatting";
-export const createEditingPointTemplate = (pointTrip) => {
+import {createElement} from "../utils.js";
+const createEditingPointTemplate = (pointTrip) => {
   const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, informationDestination} = pointTrip;
   const generateOffersTemplate = (currentInformationElement) => {
     return additionalOptions.map((randomAddiotionalOption) => `<div class="event__offer-selector">
@@ -130,3 +131,25 @@ export const createEditingPointTemplate = (pointTrip) => {
     </form>
   </li>`;
 };
+
+export default class EditingTripPoint {
+  constructor(tripData) {
+    this._element = null;
+    this._tripData = tripData;
+  }
+
+  getTemplate() {
+    return createEditingPointTemplate(this._tripData);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -1,4 +1,5 @@
-export const createFiltersTemplate = () => {
+import {createElement} from "../utils.js";
+const createFiltersTemplate = () => {
   const createTripPointFiltersTemplate = (currentFilterElement) => {
     const filterElements = [`everything`, `future`, `past`];
     return filterElements.map((filterElement) => `<div class="trip-filters__filter">
@@ -22,3 +23,24 @@ export const createFiltersTemplate = () => {
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>`;
 };
+
+export default class TripPointFilters {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFiltersTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
