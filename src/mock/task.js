@@ -1,52 +1,54 @@
-// import dayjs from "dayjs";
 import {generateTripPointDates} from "./date-generation";
 import {getRandomInteger, getRandomNumberOfElements} from "../utils.js";
 
 const MAX_NUMBER_SENTENCES = 5;
+const MIN_RANDOM_NUMBER_TYPES = 0;
 const MIN_RANDOM_NUMBER = 1;
-const additionalOffers = [
-  {
-    type: `Uber`,
-    name: `Order Uber`,
-    price: 20
-  },
-  {
-    type: `luggage`,
-    name: `Add luggage`,
-    price: 50
-  },
-  {
-    type: `comfort`,
-    name: `Switch to comfort`,
-    price: 80
-  },
-  {
-    type: `car`,
-    name: `Rent a car`,
-    price: 200
-  },
-  {
-    type: `breakfast`,
-    name: `Add breakfast`,
-    price: 50
-  },
-  {
-    type: `tickets`,
-    name: `Book tickets`,
-    price: 40
-  },
-  {
-    type: `city`,
-    name: `Lunch in city`,
-    price: 30
-  },
-];
+const MIN_PRICE = 20;
+const MAX_PRICE = 200;
+const MAX_RANDOM_PICTURES = 1000;
 
-// const timeDifference = {
-//   LessHour: 1,
-//   LessDay: 2,
-//   MoreDay: 3
-// };
+const generateAdditionalOptions = () => {
+  const additionalOffers = [
+    {
+      type: `Uber`,
+      name: `Order Uber`,
+      price: 20
+    },
+    {
+      type: `luggage`,
+      name: `Add luggage`,
+      price: 50
+    },
+    {
+      type: `comfort`,
+      name: `Switch to comfort`,
+      price: 80
+    },
+    {
+      type: `car`,
+      name: `Rent a car`,
+      price: 200
+    },
+    {
+      type: `breakfast`,
+      name: `Add breakfast`,
+      price: 50
+    },
+    {
+      type: `tickets`,
+      name: `Book tickets`,
+      price: 40
+    },
+    {
+      type: `city`,
+      name: `Lunch in city`,
+      price: 30
+    },
+  ];
+  const randomAdditionalOptions = getRandomNumberOfElements(additionalOffers, 0, 5);
+  return randomAdditionalOptions;
+};
 
 const generateTypeTripPoint = () => {
   const types = [
@@ -62,7 +64,7 @@ const generateTypeTripPoint = () => {
     `Restaurant`
   ];
 
-  const randomIndex = getRandomInteger(0, types.length - 1);
+  const randomIndex = getRandomInteger(MIN_RANDOM_NUMBER_TYPES, types.length - 1);
 
   return types[randomIndex];
 };
@@ -81,59 +83,8 @@ const generateDestinations = () => {
 };
 
 const generatePrice = () => {
-  return getRandomInteger(20, 200);
+  return getRandomInteger(MIN_PRICE, MAX_PRICE);
 };
-// const generateDate = () => {
-//   const maxDaysGap = 7;
-//   const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
-
-//   return dayjs().add(daysGap, `day`).toDate();
-//   // return dayjs() - содержит текущую дату
-//   // toDate(); вернет нам нормальный объект типа date
-// };
-
-// const generateTime = () => {
-//   const minHour = 0;
-//   const maxHour = 23;
-//   const minMinute = 0;
-//   const maxMinute = 59;
-//   const minDay = 1;
-//   const maxDay = 31;
-//   const randomHourStart = getRandomInteger(minHour, maxHour - 12);
-//   const randomHourEnd = getRandomInteger(minHour + 12, maxHour);
-//   const randomMinuteStart = getRandomInteger(minMinute, maxMinute);
-//   const randomMinuteEnd = getRandomInteger(minMinute, maxMinute);
-
-
-//   const randomSituation = getRandomInteger(1, 3);
-//   const startTime = dayjs(`${randomHourStart}.${randomMinuteStart}`).date(getRandomInteger(minDay, maxDay - 15));
-//   const endTime = dayjs().hour(`${randomHourEnd}`);
-
-//   const getTimeDifference = () => {
-//     if (randomSituation === timeDifference.LessHour) {
-//       return `${endTime.diff(startTime, `minute`)}M`;
-//     }
-//     if (randomSituation === timeDifference.LessDay) {
-//       const timeDifferenceHour = `${endTime.diff(startTime, `hour`)}H`;
-//       const timeDifferenceMinute = `${endTime.diff(startTime, `minute`)}M`;
-//       return `${timeDifferenceHour} ${timeDifferenceMinute}`;
-//     }
-//     if (randomSituation === timeDifference.MoreDay) {
-//       const timeDifferenceDay = `${endTime.diff(startTime, `day`)}D`;
-//       const timeDifferenceHour = `${endTime.diff(startTime, `hour`)}H`;
-//       const timeDifferenceMinute = `${endTime.diff(startTime, `minute`)}M`;
-//       return `${timeDifferenceDay} ${timeDifferenceHour} ${timeDifferenceMinute}`;
-//     }
-//   };
-//   return {
-//     // startTime: startTime.format(`HH:mm`),
-//     // endTime: endTime.format(`HH:mm`),
-//     startTime,
-//     endTime,
-//     durationTrip: getTimeDifference()
-//   };
-// };
-
 
 const generateInformationOfDestinations = () => {
   const information = [
@@ -156,11 +107,13 @@ const generateInformationOfDestinations = () => {
 const generateDestinationPhotos = () => {
   let photos = [];
   for (let i = 0; i < getRandomInteger(1, 6); i++) {
-    photos.push(`http://picsum.photos/248/152?${getRandomInteger(1, 1000)}`);
+    photos.push(`http://picsum.photos/248/152?${getRandomInteger(MIN_RANDOM_NUMBER, MAX_RANDOM_PICTURES)}`);
   }
   return photos;
 };
 export const generateTripPoint = (index) => {
+  const addOpt = generateAdditionalOptions();
+  console.log(`addOpt`, addOpt) // генерируется undefined
   const {startDate, endDate} = generateTripPointDates(index);
   return {
     typeTripPoint: generateTypeTripPoint(),
@@ -168,7 +121,7 @@ export const generateTripPoint = (index) => {
     startDate,
     endDate,
     price: generatePrice(),
-    additionalOptions: additionalOffers,
+    additionalOptions: generateAdditionalOptions(),
     informationDestination: generateInformationOfDestinations(),
     destinationPhotos: generateDestinationPhotos(),
     isFavorite: Boolean(getRandomInteger(0, 1))

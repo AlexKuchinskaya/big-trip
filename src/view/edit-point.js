@@ -1,12 +1,8 @@
 import {formatDatePointEditing} from "./date-formatting";
-import {getRandomNumberOfElements} from "../utils.js";
-const MIN_RANDOM_NUMBER = 1;
-const MAX_RANDOM_NUMBER = 6;
 export const createEditingPointTemplate = (pointTrip) => {
   const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, informationDestination} = pointTrip;
-  const randomAddiotionalOptions = getRandomNumberOfElements(additionalOptions, MIN_RANDOM_NUMBER, MAX_RANDOM_NUMBER);
   const generateOffersTemplate = (currentInformationElement) => {
-    return randomAddiotionalOptions.map((randomAddiotionalOption) => `<div class="event__offer-selector">
+    return additionalOptions.map((randomAddiotionalOption) => `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${randomAddiotionalOption.type}-1" type="checkbox" name="event-offer-${randomAddiotionalOption.type}"
       ${currentInformationElement === randomAddiotionalOption ? `checked` : ``}>
       <label class="event__offer-label" for="event-offer-${randomAddiotionalOption.type}-1">

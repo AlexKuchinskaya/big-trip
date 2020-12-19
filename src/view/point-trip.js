@@ -1,16 +1,15 @@
 import {formatTime, formatTimeDifferenceBetweenDates, formatDate} from "./date-formatting";
-import {getRandomExtraOffersFromZeroToFive} from "../utils.js";
+import {createElement} from "../utils.js";
 
-export const createPointTripTemplate = (pointTrip) => {
+const createPointTripTemplate = (pointTrip) => {
   const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
-  const randomAddiotionalOptions = getRandomExtraOffersFromZeroToFive(additionalOptions);
   const createExtraOffersListItem = () => {
-    if (randomAddiotionalOptions.length !== 0) {
-      return randomAddiotionalOptions.map((randomAddiotionalOption) =>
+    if (additionalOptions.length !== 0) {
+      return additionalOptions.map((additionalOption) =>
         `<li class="event__offer">
-          <span class="event__offer-title">${randomAddiotionalOption.name}</span>
+          <span class="event__offer-title">${additionalOption.name}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${randomAddiotionalOption.price}</span>
+          <span class="event__offer-price">${additionalOption.price}</span>
         </li>`).join(``);
     } else {
       return ``;
@@ -51,3 +50,26 @@ export const createPointTripTemplate = (pointTrip) => {
     </div>
   </li>`;
 };
+
+export default class PointTrip {
+  constructor(tripData) {
+    this._tripData = tripData;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPointTripTemplate(this._tripData);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
