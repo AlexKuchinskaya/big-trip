@@ -26,7 +26,27 @@ renderElement(tripEventsContainer, new SortingTrip().getElement(), RenderPositio
 const pointsListComponent = new PointsList();
 renderElement(tripEventsContainer, pointsListComponent.getElement(), `beforeend`);
 renderElement(pointsListComponent.getElement(), new NewTripPointForm(trips[0]).getElement(), RenderPosition.BEFOREEND);
-for (let i = 1; i < TRIP_COUNT; i++) {
-  renderElement(pointsListComponent.getElement(), new PointTrip(trips[i]).getElement(), RenderPosition.BEFOREEND);
+const renderTripPoint = (tripListElement, tripPoint) => {
+  const tripPointComponent = new PointTrip(tripPoint);
+  const tripPointEditComponent = new EditingTripPoint(tripPoint);
+  const replacePointToEditForm = () => {
+    tripListElement.replaceChild(tripPointEditComponent.getElement(), tripPointComponent.getElement());
+  };
+  const replaceEditFormToPoint = () => {
+    tripListElement.replaceChild(tripPointComponent.getElement(), tripPointEditComponent.getElement());
+  };
+  const editButton = tripPointComponent.getElement().querySelector(`.event__rollup-btn`);
+  editButton.addEventListener(`click`, () => {
+    replacePointToEditForm();
+  });
+  const editSubmit = tripPointEditComponent.getElement().querySelector(`form`);
+  editSubmit.addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+    replaceEditFormToPoint();
+  });
+  renderElement(tripListElement, tripPointComponent.getElement(), RenderPosition.BEFOREEND);
+};
+for (let i = 0; i < TRIP_COUNT; i++) {
+  renderTripPoint(pointsListComponent.getElement(), trips[i]);
 }
-renderElement(pointsListComponent.getElement(), new EditingTripPoint(trips[0]).getElement(), RenderPosition.BEFOREEND);
+
