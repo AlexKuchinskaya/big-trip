@@ -1,6 +1,7 @@
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  AFTEREND: `afterend`
 };
 
 export const getRandomInteger = (a = 0, b = 1) => {
@@ -19,7 +20,7 @@ export const renderElement = (container, element, place) => {
       container.append(element);
       break;
     case RenderPosition.AFTEREND:
-      container.append(element);
+      container.after(element);
       break;
   }
 };
