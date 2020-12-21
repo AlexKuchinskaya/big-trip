@@ -22,7 +22,7 @@ const sortingElements = [
   },
   {
     id: `offer`,
-    label: `Offer`,
+    label: `Offers`,
     isSortable: false,
   },
 ];
