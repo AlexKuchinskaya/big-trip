@@ -3,9 +3,9 @@ import SiteMenu from "./view/site-menu.js";
 import TripPointFilters from "./view/filters.js";
 import SortingTrip from "./view/sorting.js";
 import PointsList from "./view/points-list.js";
-import NewTripPointForm from "./view/new-point-form.js";
 import PointTrip from "./view/point-trip.js";
 import EditingTripPoint from "./view/edit-point.js";
+import TripPointMessage from "./view/no-trip-point.js";
 import {generateTripPoint} from "./mock/task.js";
 import {renderElement, RenderPosition} from "./utils.js";
 
@@ -25,7 +25,7 @@ renderElement(tripControlsMenu, new TripPointFilters().getElement(), RenderPosit
 renderElement(tripEventsContainer, new SortingTrip().getElement(), RenderPosition.BEFOREEND);
 const pointsListComponent = new PointsList();
 renderElement(tripEventsContainer, pointsListComponent.getElement(), RenderPosition.BEFOREEND);
-renderElement(pointsListComponent.getElement(), new NewTripPointForm(trips[0]).getElement(), RenderPosition.BEFOREEND);
+
 const renderTripPoint = (tripListElement, tripPoint) => {
   const tripPointComponent = new PointTrip(tripPoint);
   const tripPointEditComponent = new EditingTripPoint(tripPoint);
@@ -35,18 +35,32 @@ const renderTripPoint = (tripListElement, tripPoint) => {
   const replaceEditFormToPoint = () => {
     tripListElement.replaceChild(tripPointComponent.getElement(), tripPointEditComponent.getElement());
   };
+  const onEscapeKeyDownFormToPoint = (evt) => {
+    if (evt.key === `Escape`) {
+      evt.preventDefault();
+      replaceEditFormToPoint();
+      document.removeEventListener(`keydown`, onEscapeKeyDownFormToPoint);
+    }
+  };
+
   const editButton = tripPointComponent.getElement().querySelector(`.event__rollup-btn`);
   editButton.addEventListener(`click`, () => {
     replacePointToEditForm();
+    document.addEventListener(`keydown`, onEscapeKeyDownFormToPoint);
   });
   const editSubmit = tripPointEditComponent.getElement().querySelector(`form`);
   editSubmit.addEventListener(`click`, (evt) => {
     evt.preventDefault();
     replaceEditFormToPoint();
+    document.removeEventListener(`keydown`, onEscapeKeyDownFormToPoint);
   });
   renderElement(tripListElement, tripPointComponent.getElement(), RenderPosition.BEFOREEND);
 };
-for (let i = 0; i < TRIP_COUNT; i++) {
-  renderTripPoint(pointsListComponent.getElement(), trips[i]);
+if (trips.length === 0) {
+  renderElement(pointsListComponent.getElement(), new TripPointMessage().getElement(), RenderPosition.BEFOREEND);
+} else {
+  for (let i = 0; i < TRIP_COUNT; i++) {
+    renderTripPoint(pointsListComponent.getElement(), trips[i]);
+  }
 }
 
