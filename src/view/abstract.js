@@ -3,7 +3,7 @@ import {createElement} from "../utils.js";
 export default class Abstract {
   constructor() {
     if (new.target === Abstract) {
-      throw new Error(`Can't instantiate Abstract class, only concrete one.`);
+      throw new Error(`Can't instantiate Abstract class, nly concrete one.`);
     }
     this._element = null;
   }
