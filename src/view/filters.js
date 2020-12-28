@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import Absract from "./abstract.js";
 const createFiltersTemplate = () => {
   const createTripPointFiltersTemplate = (currentFilterElement) => {
     const filterElements = [`everything`, `future`, `past`];
@@ -24,23 +24,8 @@ const createFiltersTemplate = () => {
   </form>`;
 };
 
-export default class TripPointFilters {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TripPointFilters extends Absract {
   getTemplate() {
     return createFiltersTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

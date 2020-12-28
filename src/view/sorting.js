@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 const sortingElements = [
   {
     id: `day`,
@@ -49,23 +49,8 @@ const createSortingTripTemplate = (currentSortingElement) => {
   </form>`;
 };
 
-export default class SortingTrip {
-  constructor() {
-    this._element = null;
-  }
-
+export default class SortingTrip extends Abstract {
   getTemplate() {
     return createSortingTripTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

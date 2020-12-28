@@ -1,5 +1,5 @@
 import {generateTripPointDates} from "./date-generation";
-import {getRandomInteger, getRandomNumberOfElements} from "../utils.js";
+import {getRandomInteger, getRandomNumberOfElements} from "../utils/common.js";
 
 const MAX_NUMBER_SENTENCES = 5;
 const MIN_RANDOM_NUMBER_TYPES = 0;

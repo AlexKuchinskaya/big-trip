@@ -1,4 +1,4 @@
-import {createElement} from "../utils.js";
+import Absract from "./abstract.js";
 const createInformationTripTemplate = () => {
   return `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
@@ -12,23 +12,8 @@ const createInformationTripTemplate = () => {
     </p>
   </section>`;
 };
-export default class InformationTrip {
-  constructor() {
-    this._element = null;
-  }
-
+export default class InformationTrip extends Absract {
   getTemplate() {
     return createInformationTripTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

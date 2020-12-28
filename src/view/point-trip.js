@@ -1,5 +1,5 @@
+import Abstract from "./abstract";
 import {formatTime, formatTimeDifferenceBetweenDates, formatDate} from "./date-formatting";
-import {createElement} from "../utils.js";
 
 const createPointTripTemplate = (pointTrip) => {
   const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
@@ -51,25 +51,21 @@ const createPointTripTemplate = (pointTrip) => {
   </li>`;
 };
 
-export default class PointTrip {
+export default class PointTrip extends Abstract {
   constructor(tripData) {
+    super();
     this._tripData = tripData;
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
   }
-
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
+  }
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback; // почему здесь editClick без (), если мы записываем в объект метод
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler); // почему сразу не написать callback?
+  }
   getTemplate() {
     return createPointTripTemplate(this._tripData);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

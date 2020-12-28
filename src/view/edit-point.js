@@ -1,5 +1,5 @@
 import {formatDatePointEditing} from "./date-formatting";
-import {createElement} from "../utils.js";
+import Abstract from "./abstract.js";
 const createEditingPointTemplate = (pointTrip) => {
   const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, informationDestination} = pointTrip;
   const generateOffersTemplate = (currentInformationElement) => {
@@ -132,24 +132,21 @@ const createEditingPointTemplate = (pointTrip) => {
   </li>`;
 };
 
-export default class EditingTripPoint {
+export default class EditingTripPoint extends Abstract {
   constructor(tripData) {
-    this._element = null;
+    super();
     this._tripData = tripData;
+    this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
   }
-
+  _editFormSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.editFormSubmit();
+  }
+  setEditFormSubmitHandler(callback) {
+    this._callback.editFormSubmit = callback;
+    this.getElement().querySelector(`form`).addEventListener(`click`, this._editFormSubmitHandler);
+  }
   getTemplate() {
     return createEditingPointTemplate(this._tripData);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
