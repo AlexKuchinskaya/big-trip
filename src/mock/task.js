@@ -8,6 +8,8 @@ const MIN_PRICE = 20;
 const MAX_PRICE = 200;
 const MAX_RANDOM_PICTURES = 1000;
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 const generateAdditionalOptions = () => {
   const additionalOffers = [
     {
@@ -114,6 +116,7 @@ const generateDestinationPhotos = () => {
 export const generateTripPoint = (index) => {
   const {startDate, endDate} = generateTripPointDates(index);
   return {
+    id: generateId(),
     typeTripPoint: generateTypeTripPoint(),
     destination: generateDestinations(),
     startDate,
