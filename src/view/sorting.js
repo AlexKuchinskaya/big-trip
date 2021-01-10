@@ -1,35 +1,10 @@
 import Abstract from "./abstract.js";
-const sortingElements = [
-  {
-    id: `day`,
-    label: `Day`,
-    isSortable: true,
-  },
-  {
-    id: `event`,
-    label: `Event`,
-    isSortable: false,
-  },
-  {
-    id: `time`,
-    label: `Time`,
-    isSortable: true,
-  },
-  {
-    id: `price`,
-    label: `Price`,
-    isSortable: true,
-  },
-  {
-    id: `offer`,
-    label: `Offers`,
-    isSortable: false,
-  },
-];
+import {sortingElements} from "../const/const.js";
 
 const crateTripSortingElements = (currentSortingElement) => {
   return sortingElements.map((sortingElement) => ` <div class="trip-sort__item  trip-sort__item--${sortingElement.id}">
     <input
+      data-sort-type="${sortingElement.sortType}"
       id="sort-${sortingElement.id}"
       class="trip-sort__input  visually-hidden"
       type="radio"
@@ -50,6 +25,21 @@ const createSortingTripTemplate = (currentSortingElement) => {
 };
 
 export default class SortingTrip extends Abstract {
+  constructor() {
+    super();
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+  }
+  _sortTypeChangeHandler(evt) {
+    if (evt.target.tagName !== `INPUT`) {
+      return;
+    }
+    evt.preventDefault();
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
+  }
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener(`click`, this._sortTypeChangeHandler);
+  }
   getTemplate() {
     return createSortingTripTemplate();
   }
