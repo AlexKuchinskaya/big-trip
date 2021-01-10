@@ -137,14 +137,22 @@ export default class EditingTripPoint extends Abstract {
     super();
     this._tripData = tripData;
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
+    this._editFormCloseHandler = this._editFormCloseHandler.bind(this);
   }
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.editFormSubmit();
   }
+  _editFormCloseHandler() {
+    this._callback.editFormClose();
+  }
   setEditFormSubmitHandler(callback) {
     this._callback.editFormSubmit = callback;
-    this.getElement().querySelector(`form`).addEventListener(`click`, this._editFormSubmitHandler);
+    this.getElement().querySelector(`form`).addEventListener(`submit`, this._editFormSubmitHandler);
+  }
+  setEditFormCloseHandler(callback) {
+    this._callback.editFormClose = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormCloseHandler);
   }
   getTemplate() {
     return createEditingPointTemplate(this._tripData);

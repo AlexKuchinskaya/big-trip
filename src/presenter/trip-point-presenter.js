@@ -31,6 +31,7 @@ export default class PointTripPresenter {
     this._tripPointComponent.setEditClickHandler(this._handleEditClick);
     this._tripPointComponent.setFavouriteClickHadler(this._handleFavoriteClick);
     this._tripPointEditComponent.setEditFormSubmitHandler(this._handleEditFormSubmit);
+    this._tripPointEditComponent.setEditFormCloseHandler(this._handleEditFormSubmit);
 
     if (previousTripPointComponent === null || previousTripPointEditComponent === null) {
       render(this._tripListElement, this._tripPointComponent, RenderPosition.BEFOREEND);
