@@ -1,5 +1,5 @@
+import Abstract from "./abstract";
 import {formatTime, formatTimeDifferenceBetweenDates, formatDate} from "./date-formatting";
-import {createElement} from "../utils.js";
 
 const createPointTripTemplate = (pointTrip) => {
   const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
@@ -51,25 +51,29 @@ const createPointTripTemplate = (pointTrip) => {
   </li>`;
 };
 
-export default class PointTrip {
+export default class PointTrip extends Abstract {
   constructor(tripData) {
+    super();
     this._tripData = tripData;
-    this._element = null;
+    this._editClickHandler = this._editClickHandler.bind(this);
+    this._favouriteClickHandler = this._favouriteClickHandler.bind(this);
   }
-
+  _editClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.editClick();
+  }
+  setEditClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editClickHandler);
+  }
+  _favouriteClickHandler() {
+    this._callback.favouriteClick();
+  }
+  setFavouriteClickHadler(callback) {
+    this._callback.favouriteClick = callback;
+    this.getElement().querySelector(`.event__favorite-btn`).addEventListener(`click`, this._favouriteClickHandler);
+  }
   getTemplate() {
     return createPointTripTemplate(this._tripData);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

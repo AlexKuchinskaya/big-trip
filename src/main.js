@@ -1,13 +1,9 @@
 import InformationTrip from "./view/information-trip.js";
 import SiteMenu from "./view/site-menu.js";
 import TripPointFilters from "./view/filters.js";
-import SortingTrip from "./view/sorting.js";
-import PointsList from "./view/points-list.js";
-import PointTrip from "./view/point-trip.js";
-import EditingTripPoint from "./view/edit-point.js";
-import TripPointMessage from "./view/no-trip-point.js";
 import {generateTripPoint} from "./mock/task.js";
-import {renderElement, RenderPosition} from "./utils.js";
+import {render, RenderPosition} from "./utils/render.js";
+import TripPresenter from "./presenter/trip-presenter.js";
 
 const TRIP_COUNT = 20;
 const trips = new Array(TRIP_COUNT).fill().map((el, index) => generateTripPoint(index));
@@ -19,48 +15,9 @@ const tripControlsHeading = tripMainHeaderContainer.querySelector(`h2`);
 const tripEventsContainer = document.querySelector(`.trip-events`);
 
 
-renderElement(tripMainHeaderContainer, new InformationTrip().getElement(), RenderPosition.AFTERBEGIN);
-renderElement(tripControlsHeading, new SiteMenu().getElement(), RenderPosition.AFTEREND);
-renderElement(tripControlsMenu, new TripPointFilters().getElement(), RenderPosition.BEFOREEND);
-renderElement(tripEventsContainer, new SortingTrip().getElement(), RenderPosition.BEFOREEND);
-const pointsListComponent = new PointsList();
-renderElement(tripEventsContainer, pointsListComponent.getElement(), RenderPosition.BEFOREEND);
+render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
+render(tripControlsHeading, new SiteMenu(), RenderPosition.AFTEREND);
+render(tripControlsMenu, new TripPointFilters(), RenderPosition.BEFOREEND);
 
-const renderTripPoint = (tripListElement, tripPoint) => {
-  const tripPointComponent = new PointTrip(tripPoint);
-  const tripPointEditComponent = new EditingTripPoint(tripPoint);
-  const replacePointToEditForm = () => {
-    tripListElement.replaceChild(tripPointEditComponent.getElement(), tripPointComponent.getElement());
-  };
-  const replaceEditFormToPoint = () => {
-    tripListElement.replaceChild(tripPointComponent.getElement(), tripPointEditComponent.getElement());
-  };
-  const onEscapeKeyDownFormToPoint = (evt) => {
-    if (evt.key === `Escape`) {
-      evt.preventDefault();
-      replaceEditFormToPoint();
-      document.removeEventListener(`keydown`, onEscapeKeyDownFormToPoint);
-    }
-  };
-
-  const editButton = tripPointComponent.getElement().querySelector(`.event__rollup-btn`);
-  editButton.addEventListener(`click`, () => {
-    replacePointToEditForm();
-    document.addEventListener(`keydown`, onEscapeKeyDownFormToPoint);
-  });
-  const editSubmit = tripPointEditComponent.getElement().querySelector(`form`);
-  editSubmit.addEventListener(`click`, (evt) => {
-    evt.preventDefault();
-    replaceEditFormToPoint();
-    document.removeEventListener(`keydown`, onEscapeKeyDownFormToPoint);
-  });
-  renderElement(tripListElement, tripPointComponent.getElement(), RenderPosition.BEFOREEND);
-};
-if (trips.length === 0) {
-  renderElement(pointsListComponent.getElement(), new TripPointMessage().getElement(), RenderPosition.BEFOREEND);
-} else {
-  for (let i = 0; i < TRIP_COUNT; i++) {
-    renderTripPoint(pointsListComponent.getElement(), trips[i]);
-  }
-}
-
+const tripContentPresenter = new TripPresenter(tripEventsContainer);
+tripContentPresenter.init(trips);

@@ -1,5 +1,5 @@
 import {formatDatePointEditing} from "./date-formatting";
-import {createElement} from "../utils.js";
+import Abstract from "./abstract";
 
 const createNewPointFormTemplate = (pointTrip) => {
   const {additionalOptions, startDate, endDate, typeTripPoint, destination, informationDestination, destinationPhotos} = pointTrip;
@@ -145,24 +145,13 @@ const createNewPointFormTemplate = (pointTrip) => {
   </li>`;
 };
 
-export default class NewTripPointForm {
+export default class NewTripPointForm extends Abstract {
   constructor(tripData) {
-    this._element = null;
+    super();
     this._tripData = tripData;
   }
 
   getTemplate() {
     return createNewPointFormTemplate(this._tripData);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

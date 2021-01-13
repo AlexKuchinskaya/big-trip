@@ -2,8 +2,6 @@ import dayjs from "dayjs";
 import * as durationPlugin from "dayjs/plugin/duration";
 dayjs.extend(durationPlugin);
 
-window.dayjs = dayjs;
-
 const formatIntegerWithTwoDigits = (number) => {
   if (number < 10) {
     return `0${number}`;
@@ -12,7 +10,7 @@ const formatIntegerWithTwoDigits = (number) => {
 };
 
 
-const getTimeDifferenceInMs = (startDate, endDate) => {
+export const getTimeDifferenceInMs = (startDate, endDate) => {
   return endDate.diff(startDate);
 };
 
