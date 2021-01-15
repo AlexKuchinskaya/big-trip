@@ -1,5 +1,6 @@
 import {generateTripPointDates} from "./date-generation";
 import {getRandomInteger, getRandomNumberOfElements} from "../utils/common.js";
+import {types} from "../const/const.js";
 
 const MAX_NUMBER_SENTENCES = 5;
 const MIN_RANDOM_NUMBER_TYPES = 0;
@@ -53,19 +54,6 @@ const generateAdditionalOptions = () => {
 };
 
 const generateTypeTripPoint = () => {
-  const types = [
-    `Taxi`,
-    `Bus`,
-    `Train`,
-    `Ship`,
-    `Transport`,
-    `Drive`,
-    `Flight`,
-    `Check-in`,
-    `Sightseeing`,
-    `Restaurant`
-  ];
-
   const randomIndex = getRandomInteger(MIN_RANDOM_NUMBER_TYPES, types.length - 1);
 
   return types[randomIndex];
