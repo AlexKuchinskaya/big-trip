@@ -7,7 +7,15 @@ import TripPresenter from "./presenter/trip-presenter.js";
 
 const TRIP_COUNT = 20;
 const trips = new Array(TRIP_COUNT).fill().map((el, index) => generateTripPoint(index));
+const getAlldestinations = () => {
+  let destMap = new Set();
+  trips.forEach((trip) => {
+    destMap.add(trip.destination);
+  });
+  return destMap;
+};
 
+export const destinationsArray = Array.from(getAlldestinations());
 
 const tripMainHeaderContainer = document.querySelector(`.trip-main`);
 const tripControlsMenu = tripMainHeaderContainer.querySelector(`.trip-controls`);

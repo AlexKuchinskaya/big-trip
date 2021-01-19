@@ -42,5 +42,5 @@ export const formatDate = (date) => {
 };
 
 export const formatDatePointEditing = (date) => {
-  return date.format(`DD/MM/YY HH:mm`);
+  return dayjs(date).format(`DD/MM/YYYY HH:mm`);
 };

@@ -11,44 +11,52 @@ const MAX_RANDOM_PICTURES = 1000;
 
 const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
+
+const additionalOffers = [
+  {
+    type: `taxi`,
+    name: `Order Uber`,
+    price: 20
+  },
+  {
+    type: `bus`,
+    name: `Add luggage`,
+    price: 50
+  },
+  {
+    type: `ship`,
+    name: `Switch to comfort`,
+    price: 80
+  },
+  {
+    type: `transport`,
+    name: `Rent a car`,
+    price: 200
+  },
+  {
+    type: `drive`,
+    name: `Add breakfast`,
+    price: 50
+  },
+  {
+    type: `flight`,
+    name: `Book tickets`,
+    price: 40
+  },
+  {
+    type: `check-in`,
+    name: `Lunch in city`,
+    price: 30
+  },
+];
+
+export const filerOffersByType = (offerType) => {
+  return additionalOffers.filter((offer) => {
+    return offer.type === offerType;
+  });
+};
+
 const generateAdditionalOptions = () => {
-  const additionalOffers = [
-    {
-      type: `Uber`,
-      name: `Order Uber`,
-      price: 20
-    },
-    {
-      type: `luggage`,
-      name: `Add luggage`,
-      price: 50
-    },
-    {
-      type: `comfort`,
-      name: `Switch to comfort`,
-      price: 80
-    },
-    {
-      type: `car`,
-      name: `Rent a car`,
-      price: 200
-    },
-    {
-      type: `breakfast`,
-      name: `Add breakfast`,
-      price: 50
-    },
-    {
-      type: `tickets`,
-      name: `Book tickets`,
-      price: 40
-    },
-    {
-      type: `city`,
-      name: `Lunch in city`,
-      price: 30
-    },
-  ];
   const randomAdditionalOptions = getRandomNumberOfElements(additionalOffers, 0, 5);
   return randomAdditionalOptions;
 };
