@@ -2,14 +2,14 @@ import Abstract from "./abstract";
 import {formatTime, formatTimeDifferenceBetweenDates, formatDate} from "./date-formatting";
 
 const createPointTripTemplate = (pointTrip) => {
-  const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
+  const {appliedOffers, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
   const createExtraOffersListItem = () => {
-    if (additionalOptions.length !== 0) {
-      return additionalOptions.map((additionalOption) =>
+    if (appliedOffers.length !== 0) {
+      return appliedOffers.map((appliedOffer) =>
         `<li class="event__offer">
-          <span class="event__offer-title">${additionalOption.name}</span>
+          <span class="event__offer-title">${appliedOffer.title}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${additionalOption.price}</span>
+          <span class="event__offer-price">${appliedOffer.price}</span>
         </li>`).join(``);
     } else {
       return ``;

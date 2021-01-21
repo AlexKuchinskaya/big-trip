@@ -7,9 +7,10 @@ const Mode = {
   EDITING: `EDITING`
 };
 
-export default class PointTripPresenter {
-  constructor(tripListElement, changeData, changeMode) {
+export default class TripPointPresenter {
+  constructor(tripListElement, changeData, changeMode, detinations) {
     this._tripListElement = tripListElement;
+    this._detinations = detinations;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._tripPointComponent = null;
@@ -26,7 +27,7 @@ export default class PointTripPresenter {
     const previousTripPointComponent = this._tripPointComponent;
     const previousTripPointEditComponent = this._tripPointEditComponent;
     this._tripPointComponent = new PointTrip(tripPoint);
-    this._tripPointEditComponent = new EditingTripPoint(tripPoint);
+    this._tripPointEditComponent = new EditingTripPoint(tripPoint, this._detinations);
 
     this._tripPointComponent.setEditClickHandler(this._handleEditClick);
     this._tripPointComponent.setFavouriteClickHadler(this._handleFavoriteClick);

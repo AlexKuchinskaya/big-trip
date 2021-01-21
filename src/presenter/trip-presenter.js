@@ -9,7 +9,8 @@ import {SortTypes} from "../const/const.js";
 
 const TRIP_COUNT = 20;
 export default class TripPresenter {
-  constructor(tripContainer) {
+  constructor(tripContainer, destinations) {
+    this._destinations = destinations;
     this._tripContainer = tripContainer;
     this._pointsList = new PointsList();
     this._tripSortingMenu = new SortingTrip();
@@ -55,7 +56,9 @@ export default class TripPresenter {
     this._tripSortingMenu.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
   _renderTripPoint(tripPoint) {
-    const tripPointPresenter = new TripPointPresenter(this._pointsList, this._handleTripChange, this._handleModeChange);
+    const tripPointPresenter = new TripPointPresenter(
+        this._pointsList, this._handleTripChange, this._handleModeChange, this._destinations
+    );
     tripPointPresenter.init(tripPoint);
     this._tripPrsenters[tripPoint.id] = tripPointPresenter;
   }
