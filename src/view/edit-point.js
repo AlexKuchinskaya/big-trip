@@ -2,7 +2,6 @@ import {formatDatePointEditing} from "./date-formatting";
 import {types} from "../const/const.js";
 import Abstract from "./abstract.js";
 import {destinationsArray} from "../main.js";
-import {filerOffersByType, offers} from "../mock/task.js";
 import flatpickr from "flatpickr";
 import dayjs from "dayjs";
 
@@ -19,17 +18,17 @@ const generateDestinations = () => {
   return destinationsArray.map((destinationValue) => `<option value="${destinationValue}"></option>`).join(``);
 };
 
-const findOffersByType = (type) => {
-  return offers.find((offer) => {
+const findOffersByType = (allPossibleoffers, type) => {
+  return allPossibleoffers.find((offer) => {
     return offer.type === type;
   });
 };
 
-const generateOffersTemplate = (appliedOffers, type) => { // проблемв с id, я пока им присвоила offer.title
-  const offersFilteredBytype = findOffersByType(type);
+const generateOffersTemplate = (allPossibleoffers, appliedOffersFromTripPoint, type) => { // проблемв с id, я пока им присвоила offer.title
+  const offersFilteredBytype = findOffersByType(allPossibleoffers, type);
   return offersFilteredBytype.allOffers.map((offer) => `<div class="event__offer-selector">
     <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-1" type="checkbox" name="event-offer-${offer.title}"
-    ${appliedOffers.find((appliedOffer) => appliedOffer.title === offer.title) ? `checked` : ``}>
+    ${appliedOffersFromTripPoint.find((appliedOffer) => appliedOffer.title === offer.title) ? `checked` : ``}>
     <label class="event__offer-label" for="event-offer-${offer.title}-1">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
@@ -62,7 +61,7 @@ const createDestionationInfoTemplate = (destinationName, destinations) => {
   `;
 };
 
-const createEditingPointTemplate = (data, destinations) => { // можно ли тут оставить pointTrip? почему здесь data
+const createEditingPointTemplate = (data, destinations, offers) => { // можно ли тут оставить pointTrip? почему здесь data
   const {appliedOffers, startDate, endDate, typeTripPoint, destination, price} = data;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -119,7 +118,7 @@ const createEditingPointTemplate = (data, destinations) => { // можно ли 
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${generateOffersTemplate(appliedOffers, typeTripPoint)}
+            ${generateOffersTemplate(offers, appliedOffers, typeTripPoint)}
           </div>
         </section>
 
@@ -130,9 +129,10 @@ const createEditingPointTemplate = (data, destinations) => { // можно ли 
 };
 
 export default class EditingTripPoint extends Abstract {
-  constructor(tripData, destinations) {
+  constructor(tripData, destinations, offers) {
     super();
     this._destinations = destinations;
+    this._offers = offers;
     // this._tripData = tripData;
     this._data = EditingTripPoint.parseTripPointToData(tripData);
     this._datepicker = null;
@@ -141,18 +141,20 @@ export default class EditingTripPoint extends Abstract {
     this._typeTripChangeHandler = this._typeTripChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
+    // this._offersCheckboxHandler = this._offersCheckboxHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
-    // this.__endDateChangeHandler = this.__endDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
     this._setInnerHandlers();
-    this._setDatepicker();
+    this._setStartDatepicker();
+    this._setEndtDatepicker();
   }
   static parseTripPointToData(trip) { // обратиться к функции filerOffersByType чтобы была инфа о вскх возможных офферах новое поле лоя т редактт
     return Object.assign(
         {},
         trip,
-        {
-          allOffersForTripType: filerOffersByType(trip.typeTripPoint)
-        }
+        // {
+        //   allOffersForTripType: filerOffersByType(trip.typeTripPoint)
+        // }
     ); // у меня пока нет тех флагов которые можно было бы передать
   }
   static parseDataToTripPoint(data) {
@@ -171,7 +173,7 @@ export default class EditingTripPoint extends Abstract {
     if (justDataUpdating) {
       return;
     }
-    this.updateElement();// разве этот метод не вызовется сразу для нового  this._data, то есть в  previousELement и newElement будет одно и то же??
+    this.updateElement();
   }
   updateElement() {
     let previousELement = this.getElement();
@@ -185,24 +187,21 @@ export default class EditingTripPoint extends Abstract {
   _typeTripChangeHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      typeTripPoint: evt.target.value,
-      // additionalOptions: findElemenentBy(this._data, evt).additionalOptions
+      typeTripPoint: evt.target.value
     });
   }
   _destinationChangeHandler(evt) {
-    console.log(`evt`, evt)
-    // evt.preventDefault();
+    evt.preventDefault();
     const newDestination = evt.target.value;
     this.updateData({
       destination: newDestination
     });
   }
-  _setDatepicker() {
+  _setStartDatepicker() {
     if (this._datepicker) {
       this._datepicker.destroy();
       this._datepicker = null;
     }
-
     this._datepicker = flatpickr(
         this.getElement().querySelector(`#event-start-time-1`),
         {
@@ -214,24 +213,43 @@ export default class EditingTripPoint extends Abstract {
         }
     );
   }
+
+  _setEndtDatepicker() {
+    if (this._datepicker) {
+      this._datepicker.destroy();
+      this._datepicker = null;
+    }
+    this._datepicker = flatpickr(
+        this.getElement().querySelector(`#event-end-time-1`),
+        {
+          dateFormat: `d/m/Y H:i`,
+          enableTime: true,
+          time_24hr: true,
+          defaultDate: this._data.endDate, // если не ставлю дефолтное время не меняяется время в инпуте
+          onChange: this._endDateChangeHandler
+        }
+    );
+  }
   _startDateChangeHandler(userDate) {
     this.updateData({
-      startDate: userDate
+      startDate: dayjs(userDate)
     });
   }
   _endDateChangeHandler(userDate) {
     this.updateData({
-      endDate: userDate
+      endDate: dayjs(userDate)
     });
   }
   _setInnerHandlers() {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeTripChangeHandler); // здесь срабатывает только input or change
     this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
+    // this.getElement().querySelector(`.event__offer-selector`).addEventListener(`input`, this._offersCheckboxHandler);
   }
   restoreHandlers() {
     this._setInnerHandlers();
-    this._setDatepicker();
+    this._setStartDatepicker();
+    this._setEndtDatepicker();
     this.setEditFormSubmitHandler(this._callback.editFormSubmit); // зачем нам их восстанавливать, зачем this._callback.editFormSubmit
     this.setEditFormCloseHandler(this._callback.editFormClose); // зачем нам восстанавливтаь их
   }
@@ -241,9 +259,21 @@ export default class EditingTripPoint extends Abstract {
       price: evt.target.value
     }, true); // justDataUpdating = true
   }
+  _offersCheckboxHandler(evt) {
+    evt.preventDefault();
+    const newAppliedOffers = evt.target.checked
+    this.updateData({
+      appliedOffers: Object.assign(
+        {},
+        // this._data.appliedOffers,
+        {[evt.target.input]: evt.target.checked}
+      )
+    });
+    console.log(`newAppliedOffers`, this._data.appliedOffers)
+  }
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.editFormSubmit();
+    this._callback.editFormSubmit(EditingTripPoint.parseTripPointToData(this._data)); //почему parseTripPointToData
   }
   _editFormCloseHandler() {
     this._callback.editFormClose();
@@ -262,6 +292,6 @@ export default class EditingTripPoint extends Abstract {
   //   })
   // }
   getTemplate() {
-    return createEditingPointTemplate(this._data, this._destinations);
+    return createEditingPointTemplate(this._data, this._destinations, this._offers);
   }
 }

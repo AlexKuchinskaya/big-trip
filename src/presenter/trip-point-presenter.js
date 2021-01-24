@@ -8,9 +8,10 @@ const Mode = {
 };
 
 export default class TripPointPresenter {
-  constructor(tripListElement, changeData, changeMode, detinations) {
+  constructor(tripListElement, changeData, changeMode, detinations, offers) {
     this._tripListElement = tripListElement;
     this._detinations = detinations;
+    this._offers = offers;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._tripPointComponent = null;
@@ -27,7 +28,7 @@ export default class TripPointPresenter {
     const previousTripPointComponent = this._tripPointComponent;
     const previousTripPointEditComponent = this._tripPointEditComponent;
     this._tripPointComponent = new PointTrip(tripPoint);
-    this._tripPointEditComponent = new EditingTripPoint(tripPoint, this._detinations);
+    this._tripPointEditComponent = new EditingTripPoint(tripPoint, this._detinations, this._offers);
 
     this._tripPointComponent.setEditClickHandler(this._handleEditClick);
     this._tripPointComponent.setFavouriteClickHadler(this._handleFavoriteClick);
@@ -74,7 +75,8 @@ export default class TripPointPresenter {
   _handleEditClick() {
     this._replacePointToEditForm();
   }
-  _handleEditFormSubmit() {
+  _handleEditFormSubmit(tripPoint) {
+    this._changeData(tripPoint);
     this._replaceEditFormToPoint();
   }
   _handleFavoriteClick() {
