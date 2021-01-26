@@ -47,3 +47,16 @@ export const SortTypes = {
   PRICE_UP: `price`,
   TIME_UP: `time`
 };
+
+export const UserAction = {
+  ADD_TRIP: `ADD_TRIP`,
+  DELETE_TRIP: `DELETE_TRIP`,
+  UPDATE_TRIP: `UPDATE_TRIP`
+};
+
+export const UpdateType = {
+  PATCH: `PATCH`,
+  MINOR: `MINOR`,
+  MAJOR: `MAJOR`
+};
+

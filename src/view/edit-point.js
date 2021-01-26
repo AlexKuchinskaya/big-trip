@@ -1,9 +1,9 @@
 import {formatDatePointEditing} from "./date-formatting";
 import {types} from "../const/const.js";
 import Abstract from "./abstract.js";
-import {destinationsArray} from "../main.js";
 import flatpickr from "flatpickr";
 import dayjs from "dayjs";
+import he from "he";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
@@ -14,8 +14,8 @@ const generateTripsTypesOptions = () => {
   </div>`).join(``);
 };
 
-const generateDestinations = () => {
-  return destinationsArray.map((destinationValue) => `<option value="${destinationValue}"></option>`).join(``);
+const generateDestinations = (destinations) => {
+  return destinations.map((destinationValue) => `<option value="${destinationValue.name}"></option>`).join(``);
 };
 
 const findOffersByType = (allPossibleoffers, type) => {
@@ -85,9 +85,9 @@ const createEditingPointTemplate = (data, destinations, offers) => { // можн
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeTripPoint}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${generateDestinations()}
+            ${generateDestinations(destinations)}
           </datalist>
         </div>
 
@@ -137,6 +137,7 @@ export default class EditingTripPoint extends Abstract {
     this._data = EditingTripPoint.parseTripPointToData(tripData);
     this._datepicker = null;
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._editFormCloseHandler = this._editFormCloseHandler.bind(this);
     this._typeTripChangeHandler = this._typeTripChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
@@ -252,6 +253,7 @@ export default class EditingTripPoint extends Abstract {
     this._setEndtDatepicker();
     this.setEditFormSubmitHandler(this._callback.editFormSubmit); // зачем нам их восстанавливать, зачем this._callback.editFormSubmit
     this.setEditFormCloseHandler(this._callback.editFormClose); // зачем нам восстанавливтаь их
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
   _priceInputHandler(evt) {
     evt.preventDefault();
@@ -273,10 +275,14 @@ export default class EditingTripPoint extends Abstract {
   }
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.editFormSubmit(EditingTripPoint.parseTripPointToData(this._data)); //почему parseTripPointToData
+    this._callback.editFormSubmit(EditingTripPoint.parseDataToTripPoint(this._data));
   }
   _editFormCloseHandler() {
     this._callback.editFormClose();
+  }
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EditingTripPoint.parseDataToTripPoint(this._data));
   }
   setEditFormSubmitHandler(callback) {
     this._callback.editFormSubmit = callback;
@@ -284,7 +290,19 @@ export default class EditingTripPoint extends Abstract {
   }
   setEditFormCloseHandler(callback) {
     this._callback.editFormClose = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormCloseHandler);
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._editFormCloseHandler);
+  }
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+  removeElement() {
+    super.removeElement();
+
+    if (this._datepicker) {
+      this._datepicker.destroy();
+      this._datepicker = null;
+    }
   }
   // reset(trip) {
   //   this.updateData({

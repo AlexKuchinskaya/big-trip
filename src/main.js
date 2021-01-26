@@ -6,19 +6,13 @@ import {destinationsMock} from "./mock/destinations.js";
 import {offersMock} from "./mock/offers.js";
 import {render, RenderPosition} from "./utils/render.js";
 import TripPresenter from "./presenter/trip-presenter.js";
-
+import TripsModel from "./model/trips-model.js";
 const TRIP_COUNT = 20;
 const trips = new Array(TRIP_COUNT).fill().map((el, index) => generateTripPoint(index));
 
-const getAlldestinations = () => {
-  let destMap = new Set();
-  trips.forEach((trip) => {
-    destMap.add(trip.destination);
-  });
-  return destMap;
-};
 
-export const destinationsArray = Array.from(getAlldestinations());
+const tripsModel = new TripsModel();
+tripsModel.setTrips(trips);
 
 const tripMainHeaderContainer = document.querySelector(`.trip-main`);
 const tripControlsMenu = tripMainHeaderContainer.querySelector(`.trip-controls`);
@@ -30,5 +24,5 @@ render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN
 render(tripControlsHeading, new SiteMenu(), RenderPosition.AFTEREND);
 render(tripControlsMenu, new TripPointFilters(), RenderPosition.BEFOREEND);
 
-const tripContentPresenter = new TripPresenter(tripEventsContainer, destinationsMock, offersMock);
-tripContentPresenter.init(trips);
+const tripContentPresenter = new TripPresenter(tripEventsContainer, destinationsMock, offersMock, tripsModel);
+tripContentPresenter.init();
