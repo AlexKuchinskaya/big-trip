@@ -36,6 +36,8 @@ const generatePrice = () => {
 
 export const generateTripPoint = (index) => {
   const generatedTypeTrip = generateTypeTripPoint();
+  const appliedOffers = generateAdditionalOptions(generatedTypeTrip);
+  console.log(`appliedOffers`, appliedOffers)
   const {startDate, endDate} = generateTripPointDates(index);
   return {
     id: generateId(),

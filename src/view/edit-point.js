@@ -24,17 +24,35 @@ const findOffersByType = (allPossibleoffers, type) => {
   });
 };
 
-const generateOffersTemplate = (allPossibleoffers, appliedOffersFromTripPoint, type) => { // проблемв с id, я пока им присвоила offer.title
-  const offersFilteredBytype = findOffersByType(allPossibleoffers, type);
-  return offersFilteredBytype.allOffers.map((offer) => `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title}-1" type="checkbox" name="event-offer-${offer.title}"
-    ${appliedOffersFromTripPoint.find((appliedOffer) => appliedOffer.title === offer.title) ? `checked` : ``}>
-    <label class="event__offer-label" for="event-offer-${offer.title}-1">
+const renderOfferSelector = (offer, index, appliedOffersFromTripPoint) => {
+  const isChecked = appliedOffersFromTripPoint.find(
+      (appliedOffer) => appliedOffer.title === offer.title
+  );
+  const checkboxId = `event-offer-${offer.title}-${index}`;
+  return `
+  <div class="event__offer-selector">
+    <input
+      class="event__offer-checkbox  visually-hidden"
+      id="${checkboxId}"
+      type="checkbox"
+      name="event-offer-${offer.title}"
+      value="${offer.title}"
+      ${isChecked ? `checked` : ``}
+    >
+    <label class="event__offer-label" for="${checkboxId}">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${offer.price}</span>
     </label>
-  </div>`).join(``);
+  </div>`;
+};
+
+const generateOffersTemplate = (allPossibleoffers, appliedOffersFromTripPoint, type) => { // проблемв с id, я пока им присвоила offer.title
+  const offersFilteredBytype = findOffersByType(allPossibleoffers, type);
+  return offersFilteredBytype.allOffers.map((offer, index) => {
+    return renderOfferSelector(offer, index, appliedOffersFromTripPoint);
+  })
+  .join(``);
 };
 
 const generateImageTemplate = (pictures) => {
@@ -93,10 +111,10 @@ const createEditingPointTemplate = (data, destinations, offers) => { // можн
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDatePointEditing(startDate)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDatePointEditing(endDate)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -136,13 +154,14 @@ export default class EditingTripPoint extends Abstract {
     // this._tripData = tripData;
     this._data = EditingTripPoint.parseTripPointToData(tripData);
     this._datepicker = null;
+    this._endDatepicker = null;
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._editFormCloseHandler = this._editFormCloseHandler.bind(this);
     this._typeTripChangeHandler = this._typeTripChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._priceInputHandler = this._priceInputHandler.bind(this);
-    // this._offersCheckboxHandler = this._offersCheckboxHandler.bind(this);
+    this._offersCheckboxHandler = this._offersCheckboxHandler.bind(this);
     this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
     this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
     this._setInnerHandlers();
@@ -152,15 +171,14 @@ export default class EditingTripPoint extends Abstract {
   static parseTripPointToData(trip) { // обратиться к функции filerOffersByType чтобы была инфа о вскх возможных офферах новое поле лоя т редактт
     return Object.assign(
         {},
-        trip,
-        // {
-        //   allOffersForTripType: filerOffersByType(trip.typeTripPoint)
-        // }
-    ); // у меня пока нет тех флагов которые можно было бы передать
+        trip
+    ); // не хватает условий
   }
   static parseDataToTripPoint(data) {
-    const copyDate = Object.assign({}, data); // не хватает условий
-    return copyDate;
+    return Object.assign(
+        {},
+        data
+    ); // не хватает условий
   }
   updateData(newData, justDataUpdating) {
     if (!newData) {
@@ -193,40 +211,52 @@ export default class EditingTripPoint extends Abstract {
   }
   _destinationChangeHandler(evt) {
     evt.preventDefault();
-    const newDestination = evt.target.value;
-    this.updateData({
-      destination: newDestination
-    });
+    const newDestinationName = evt.target.value;
+    console.log('_destinationChangeHandler', newDestinationName)
+    const isCorrectValue = this._destinations.some((destination) => {
+      return destination.name === newDestinationName
+    })
+    console.log('isCorrectValue', isCorrectValue)
+    if (isCorrectValue) {
+      this.updateData({
+        destination: newDestinationName
+      });
+      evt.target.setCustomValidity(``);
+    } else {
+      evt.target.setCustomValidity(`Введенное значение должно соответсвовать одному из вариантов из списка`); //works only with enter, если просто написать что-то и убрать курсор то оно пропускает это значение
+    }
+    evt.target.reportValidity();
   }
   _setStartDatepicker() {
     if (this._datepicker) {
       this._datepicker.destroy();
       this._datepicker = null;
     }
+    // console.log(`tripData.startDate`, this._data.startDate.toDate());
     this._datepicker = flatpickr(
         this.getElement().querySelector(`#event-start-time-1`),
         {
-          dateFormat: `d/m/Y H:i`,
+          // dateFormat: `d/m/Y H:i`,
           enableTime: true,
           time_24hr: true,
-          defaultDate: this._data.startDate, // если не ставлю дефолтное время не меняяется время в инпуте
+          defaultDate: this._data.startDate.toDate(), // если не ставлю дефолтное время не меняяется время в инпуте
           onChange: this._startDateChangeHandler // На событие flatpickr передаём наш колбэк
         }
     );
   }
 
   _setEndtDatepicker() {
-    if (this._datepicker) {
-      this._datepicker.destroy();
-      this._datepicker = null;
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
     }
-    this._datepicker = flatpickr(
+    this._endDatepicker = flatpickr(
         this.getElement().querySelector(`#event-end-time-1`),
         {
-          dateFormat: `d/m/Y H:i`,
+          // dateFormat: `d/m/Y H:i`,
           enableTime: true,
           time_24hr: true,
-          defaultDate: this._data.endDate, // если не ставлю дефолтное время не меняяется время в инпуте
+          defaultDate: this._data.endDate.toDate(), // если не ставлю дефолтное время не меняяется время в инпуте
           onChange: this._endDateChangeHandler
         }
     );
@@ -245,7 +275,9 @@ export default class EditingTripPoint extends Abstract {
     this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeTripChangeHandler); // здесь срабатывает только input or change
     this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
-    // this.getElement().querySelector(`.event__offer-selector`).addEventListener(`input`, this._offersCheckboxHandler);
+    this.getElement().querySelectorAll(`.event__offer-checkbox`).forEach((offerCheckbox) => {
+      offerCheckbox.addEventListener(`change`, this._offersCheckboxHandler);
+    });
   }
   restoreHandlers() {
     this._setInnerHandlers();
@@ -262,16 +294,26 @@ export default class EditingTripPoint extends Abstract {
     }, true); // justDataUpdating = true
   }
   _offersCheckboxHandler(evt) {
-    evt.preventDefault();
-    const newAppliedOffers = evt.target.checked
-    this.updateData({
-      appliedOffers: Object.assign(
-        {},
-        // this._data.appliedOffers,
-        {[evt.target.input]: evt.target.checked}
-      )
-    });
-    console.log(`newAppliedOffers`, this._data.appliedOffers)
+    const offerTitle = evt.target.value;
+    const isSelected = evt.target.checked;
+    const offerGroupOfCurrentType = this._offers.find((offerGroup) => offerGroup.type === this._data.typeTripPoint);
+    const currentOffer = offerGroupOfCurrentType.allOffers.find((offer) => offer.title === offerTitle);
+    if (isSelected) {
+      const newSelectedOffers = [
+        ...this._data.appliedOffers,
+        currentOffer,
+      ];
+      this.updateData({
+        appliedOffers: newSelectedOffers,
+      });
+    } else {
+      const newSelectedOffers = this._data.appliedOffers.filter((appliedOffer) => {
+        return appliedOffer.title !== offerTitle;
+      });
+      this.updateData({
+        appliedOffers: newSelectedOffers,
+      });
+    }
   }
   _editFormSubmitHandler(evt) {
     evt.preventDefault();
@@ -290,11 +332,11 @@ export default class EditingTripPoint extends Abstract {
   }
   setEditFormCloseHandler(callback) {
     this._callback.editFormClose = callback;
-    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._editFormCloseHandler);
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormCloseHandler);
   }
   setDeleteClickHandler(callback) {
     this._callback.deleteClick = callback;
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._formDeleteClickHandler);
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, this._formDeleteClickHandler);
   }
   removeElement() {
     super.removeElement();
@@ -302,6 +344,10 @@ export default class EditingTripPoint extends Abstract {
     if (this._datepicker) {
       this._datepicker.destroy();
       this._datepicker = null;
+    }
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
     }
   }
   // reset(trip) {

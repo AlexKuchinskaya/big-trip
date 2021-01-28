@@ -12,17 +12,3 @@ export const getRandomNumberOfElements = (elements, min, max) => {
   }
   return newElements;
 };
-
-export const updateItems = (items, updatedItem) => {
-  const index = items.findIndex((item) => item.id === updatedItem.id);
-  if (index === -1) {
-    return items;
-  } else {
-    return [
-      ...items.slice(0, index),
-      updatedItem,
-      ...items.slice(index + 1)
-    ];
-  }
-};
-

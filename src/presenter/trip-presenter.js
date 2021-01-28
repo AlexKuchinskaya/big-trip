@@ -28,9 +28,10 @@ export default class TripPresenter {
   init() {
     // this._tripPoints = tripPoints.slice(); // удалить вконце
     // this._originalTripPoints = tripPoints.slice(); // удалить вконце
-    this._renderSort();
-    render(this._tripContainer, this._pointsList, RenderPosition.BEFOREEND);
+    // this._renderSort();
     this._renderTripContent();
+    render(this._tripContainer, this._pointsList, RenderPosition.BEFOREEND);
+
   }
 
   _getTrips() {
@@ -42,21 +43,6 @@ export default class TripPresenter {
     }
     return this._tripsModel.getTrips();
   }
-  // _sortTrips(sortType) {
-  //   switch (sortType) {
-  //     case SortTypes.PRICE_UP:
-  //       this._tripPoints.sort(sortTripsByPrice);
-  //       break;
-  //     case SortTypes.TIME_UP:
-  //       this._tripPoints.sort(sortingByTime);
-  //       break;
-  //     default:
-  //       this._tripPoints = this._originalTripPoints.slice();
-  //   }
-
-  //   this._currentSortType = sortType;
-  // }
-
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
@@ -94,10 +80,10 @@ export default class TripPresenter {
       this._renderNoTripMessage();
       return;
     }
-    // this._renderSort();
+    this._renderSort();
     this._renderTripPointsList(trips);
   }
-  _clearTripsArea({resetSortType = false} = {}) { // зачем мы делаем так?
+  _clearTripsArea({resetSortType = false} = {}) {
     Object
       .values(this._tripPrsenters)
       .forEach((presenter) => presenter.destroy());
@@ -136,12 +122,10 @@ export default class TripPresenter {
       case UpdateType.MINOR:
         this._clearTripsArea();
         this._renderTripContent();
-
         break;
       case UpdateType.MAJOR:
         this._clearTripsArea({resetSortType: true}); // мы передаем объект{resetSortType: true}?
         this._renderTripContent();
-
         break;
     }
   }
