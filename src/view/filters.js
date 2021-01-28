@@ -15,7 +15,7 @@ const createTripPointFilterItemTemplate = (filter, currentFilterType) => {
     <label
       class="trip-filters__filter-label"
       for="filter-${type}">
-      ${type}
+      ${name}
     </label>
   </div>`;
 };
@@ -48,6 +48,8 @@ export default class TripPointFiltersView extends Absract {
   }
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;
-    this.getElement().addEventListener(`click`, this._filterTypeChangeHandler);
+    this.getElement().querySelectorAll(`.trip-filters__filter-input`).forEach((filter) => {
+      filter.addEventListener(`change`, this._filterTypeChangeHandler);
+    });
   }
 }

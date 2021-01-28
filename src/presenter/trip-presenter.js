@@ -6,10 +6,12 @@ import TripPointPresenter from "./trip-point-presenter.js";
 import {updateItems} from "../utils/common.js";
 import {sortTripsByPrice, sortingByTime} from "../utils/trips-sorting.js";
 import {SortTypes, UserAction, UpdateType} from "../const/const.js";
+import {filter} from "../utils/filter-utils.js";
 
 export default class TripPresenter {
-  constructor(tripContainer, destinations, offers, tripsModel) {
+  constructor(tripContainer, destinations, offers, tripsModel, filterModel) {
     this._tripsModel = tripsModel;
+    this._filterModel = filterModel;
     this._destinations = destinations;
     this._tripContainer = tripContainer;
     this._offers = offers;
@@ -24,6 +26,7 @@ export default class TripPresenter {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._tripsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
   init() {
     // this._tripPoints = tripPoints.slice(); // удалить вконце
@@ -35,19 +38,23 @@ export default class TripPresenter {
   }
 
   _getTrips() {
+    const filterType = this._filterModel.getFilter();
+    const trips = this._tripsModel.getTrips();
+    const filteredTrips = filter[filterType](trips);
+
     switch (this._currentSortType) {
       case SortTypes.PRICE_UP:
-        return this._tripsModel.getTrips().slice().sort(sortTripsByPrice);
+        return filteredTrips.sort(sortTripsByPrice);
       case SortTypes.TIME_UP:
-        return this._tripsModel.getTrips().slice().sort(sortingByTime);
+        return filteredTrips.sort(sortingByTime);
     }
-    return this._tripsModel.getTrips();
+    return filteredTrips;
   }
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
     }
-    this._currentSortType = sortType; // разве это не то же самое, что записано в if (this._currentSortType === sortType)?
+    this._currentSortType = sortType;
     this._clearTripsArea();
     this._renderTripContent();
   }
@@ -116,7 +123,6 @@ export default class TripPresenter {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         this._tripPrsenters[data.id].init(data);
         break;
       case UpdateType.MINOR:

@@ -5,6 +5,7 @@ export default class FilterModel extends Observer {
   constructor() {
     super();
     this._activeFilter = FilterType.EVERYTHING;
+    console.log(`this._activeFilter`, this._activeFilter)
   }
 
   setFilter(updateType, filter) {
