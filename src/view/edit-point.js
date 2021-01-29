@@ -291,7 +291,7 @@ export default class EditingTripPoint extends Abstract {
     evt.preventDefault();
     this.updateData({
       price: evt.target.value
-    }, true); // justDataUpdating = true
+    }, true);
   }
   _offersCheckboxHandler(evt) {
     const offerTitle = evt.target.value;
