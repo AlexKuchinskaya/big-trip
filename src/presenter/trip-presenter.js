@@ -6,7 +6,7 @@ import TripPointPresenter from "./trip-point-presenter.js";
 import TripNewPresenter from "./trip-new-presenter.js";
 import {updateItems} from "../utils/common.js";
 import {sortTripsByPrice, sortingByTime} from "../utils/trips-sorting.js";
-import {SortTypes, UserAction, UpdateType, FilterType} from "../const/const.js";
+import {SortTypes, UserAction, UpdateType} from "../const/const.js";
 import {filter} from "../utils/filter-utils.js";
 
 export default class TripPresenter {
