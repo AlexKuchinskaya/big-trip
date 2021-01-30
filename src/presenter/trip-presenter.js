@@ -3,9 +3,10 @@ import TripPointMessage from "../view/no-trip-point.js";
 import PointsList from "../view/points-list.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
 import TripPointPresenter from "./trip-point-presenter.js";
+import TripNewPresenter from "./trip-new-presenter.js";
 import {updateItems} from "../utils/common.js";
 import {sortTripsByPrice, sortingByTime} from "../utils/trips-sorting.js";
-import {SortTypes, UserAction, UpdateType} from "../const/const.js";
+import {SortTypes, UserAction, UpdateType, FilterType} from "../const/const.js";
 import {filter} from "../utils/filter-utils.js";
 
 export default class TripPresenter {
@@ -27,7 +28,9 @@ export default class TripPresenter {
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._tripsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+    this._tripNewPresenter = new TripNewPresenter(this._pointsList, this._handleViewAction, this._destinations, this._offers);
   }
+
   init() {
     // this._tripPoints = tripPoints.slice(); // удалить вконце
     // this._originalTripPoints = tripPoints.slice(); // удалить вконце
@@ -35,6 +38,12 @@ export default class TripPresenter {
     this._renderTripContent();
     render(this._tripContainer, this._pointsList, RenderPosition.BEFOREEND);
 
+  }
+
+  createNewTrip(callback) {
+    this._currentSortType = SortTypes.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._tripNewPresenter.init(callback);
   }
 
   _getTrips() {
@@ -50,6 +59,7 @@ export default class TripPresenter {
     }
     return filteredTrips;
   }
+
   _handleSortTypeChange(sortType) {
     if (this._currentSortType === sortType) {
       return;
@@ -58,6 +68,7 @@ export default class TripPresenter {
     this._clearTripsArea();
     this._renderTripContent();
   }
+
   _renderSort() {
     if (this._tripSortingMenu !== null) {
       this._tripSortingMenu = null;
@@ -66,6 +77,7 @@ export default class TripPresenter {
     render(this._tripContainer, this._tripSortingMenu, RenderPosition.BEFOREEND);
     this._tripSortingMenu.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
+
   _renderTripPoint(tripPoint) {
     const tripPointPresenter = new TripPointPresenter(
         this._pointsList, this._handleViewAction, this._handleModeChange, this._destinations, this._offers
@@ -73,13 +85,16 @@ export default class TripPresenter {
     tripPointPresenter.init(tripPoint);
     this._tripPrsenters[tripPoint.id] = tripPointPresenter;
   }
+
   _renderTripPointsList(trips) {
     // const trips = this._getTrips().slice();
     trips.forEach((trip) => this._renderTripPoint(trip));
   }
+
   _renderNoTripMessage() {
     render(this._pointsList, this._noTripComponent, RenderPosition.BEFOREEND);
   }
+
   _renderTripContent() {
     const trips = this._getTrips();
     const tripsLenght = trips.length;
@@ -90,11 +105,12 @@ export default class TripPresenter {
     this._renderSort();
     this._renderTripPointsList(trips);
   }
+
   _clearTripsArea({resetSortType = false} = {}) {
+    this._tripNewPresenter.destroy();
     Object
       .values(this._tripPrsenters)
       .forEach((presenter) => presenter.destroy());
-    this._tripPrsenters = {};
     remove(this._tripSortingMenu);
     remove(this._noTripComponent);
     if (resetSortType) {
@@ -107,7 +123,9 @@ export default class TripPresenter {
   //   // Здесь будем вызывать обновление модели
   //   this._tripPrsenters[updatedTrip.id].init(updatedTrip);
   // }
+
   _handleViewAction(actionType, updateType, update) {
+    console.log(`actionType`, actionType)
     switch (actionType) {
       case UserAction.UPDATE_TRIP:
         this._tripsModel.updateTrip(updateType, update);
@@ -120,6 +138,7 @@ export default class TripPresenter {
         break;
     }
   }
+
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
@@ -135,7 +154,9 @@ export default class TripPresenter {
         break;
     }
   }
+
   _handleModeChange() {
+    this._tripNewPresenter.destroy();
     Object
       .values(this._tripPrsenters)
       .forEach((presenter) => presenter.resetView());

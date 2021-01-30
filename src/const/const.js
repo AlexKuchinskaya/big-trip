@@ -66,3 +66,8 @@ export const FilterType = {
   PAST: `past`
 };
 
+export const MenuItem = {
+  NEW_EVENT: `NEW_EVENT`,
+  TABLE: `TABLE`,
+  STATS: `STATS`
+};

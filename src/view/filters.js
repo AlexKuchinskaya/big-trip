@@ -1,7 +1,6 @@
 import Absract from "./abstract.js";
 
 const createTripPointFilterItemTemplate = (filter, currentFilterType) => {
-  // const filterElements = [`everything`, `future`, `past`];
   const {type, name} = filter;
   return `<div class="trip-filters__filter">
     <input

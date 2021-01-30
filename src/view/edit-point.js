@@ -1,4 +1,3 @@
-import {formatDatePointEditing} from "./date-formatting";
 import {types} from "../const/const.js";
 import Abstract from "./abstract.js";
 import flatpickr from "flatpickr";
@@ -7,18 +6,18 @@ import he from "he";
 
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
-const generateTripsTypesOptions = () => {
+export const generateTripsTypesOptions = () => {
   return types.map((tripType) => `<div class="event__type-item">
     <input id="event-type-${tripType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${tripType}" >
     <label class="event__type-label  event__type-label--${tripType}" for="event-type-${tripType}-1">${tripType[0].toUpperCase() + tripType.substring(1)}</label>
   </div>`).join(``);
 };
 
-const generateDestinations = (destinations) => {
+export const generateDestinations = (destinations) => {
   return destinations.map((destinationValue) => `<option value="${destinationValue.name}"></option>`).join(``);
 };
 
-const findOffersByType = (allPossibleoffers, type) => {
+export const findOffersByType = (allPossibleoffers, type) => {
   return allPossibleoffers.find((offer) => {
     return offer.type === type;
   });
@@ -61,7 +60,7 @@ const generateImageTemplate = (pictures) => {
   }).join(``);
 };
 
-const createDestionationInfoTemplate = (destinationName, destinations) => {
+export const createDestionationInfoTemplate = (destinationName, destinations) => {
   const foundDestinationInfo = destinations.find((destination) => {
     return destination.name === destinationName;
   });
@@ -79,8 +78,8 @@ const createDestionationInfoTemplate = (destinationName, destinations) => {
   `;
 };
 
-const createEditingPointTemplate = (data, destinations, offers) => { // можно ли тут оставить pointTrip? почему здесь data
-  const {appliedOffers, startDate, endDate, typeTripPoint, destination, price} = data;
+const createEditingPointTemplate = (data, destinations, offers) => {
+  const {appliedOffers, typeTripPoint, destination, price} = data;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -103,7 +102,7 @@ const createEditingPointTemplate = (data, destinations, offers) => { // можн
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeTripPoint}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${generateDestinations(destinations)}
           </datalist>
@@ -169,16 +168,28 @@ export default class EditingTripPoint extends Abstract {
     this._setEndtDatepicker();
   }
   static parseTripPointToData(trip) { // обратиться к функции filerOffersByType чтобы была инфа о вскх возможных офферах новое поле лоя т редактт
+    if (!trip) {
+      trip = {
+        id: ``,
+        typeTripPoint: `taxi`,
+        destination: `Amsterdam`,
+        startDate: dayjs(),
+        endDate: dayjs(),
+        price: 0,
+        appliedOffers: [],
+        isFavorite: false,
+      };
+    }
     return Object.assign(
         {},
         trip
-    ); // не хватает условий
+    );
   }
   static parseDataToTripPoint(data) {
     return Object.assign(
         {},
         data
-    ); // не хватает условий
+    );
   }
   updateData(newData, justDataUpdating) {
     if (!newData) {
@@ -206,17 +217,16 @@ export default class EditingTripPoint extends Abstract {
   _typeTripChangeHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      typeTripPoint: evt.target.value
+      typeTripPoint: evt.target.value,
+      appliedOffers: []
     });
   }
   _destinationChangeHandler(evt) {
     evt.preventDefault();
     const newDestinationName = evt.target.value;
-    console.log('_destinationChangeHandler', newDestinationName)
     const isCorrectValue = this._destinations.some((destination) => {
-      return destination.name === newDestinationName
-    })
-    console.log('isCorrectValue', isCorrectValue)
+      return destination.name === newDestinationName;
+    });
     if (isCorrectValue) {
       this.updateData({
         destination: newDestinationName
@@ -232,15 +242,14 @@ export default class EditingTripPoint extends Abstract {
       this._datepicker.destroy();
       this._datepicker = null;
     }
-    // console.log(`tripData.startDate`, this._data.startDate.toDate());
+
     this._datepicker = flatpickr(
         this.getElement().querySelector(`#event-start-time-1`),
         {
-          // dateFormat: `d/m/Y H:i`,
           enableTime: true,
           time_24hr: true,
-          defaultDate: this._data.startDate.toDate(), // если не ставлю дефолтное время не меняяется время в инпуте
-          onChange: this._startDateChangeHandler // На событие flatpickr передаём наш колбэк
+          defaultDate: this._data.startDate.toDate(),
+          onChange: this._startDateChangeHandler
         }
     );
   }
@@ -253,10 +262,9 @@ export default class EditingTripPoint extends Abstract {
     this._endDatepicker = flatpickr(
         this.getElement().querySelector(`#event-end-time-1`),
         {
-          // dateFormat: `d/m/Y H:i`,
           enableTime: true,
           time_24hr: true,
-          defaultDate: this._data.endDate.toDate(), // если не ставлю дефолтное время не меняяется время в инпуте
+          defaultDate: this._data.endDate.toDate(),
           onChange: this._endDateChangeHandler
         }
     );

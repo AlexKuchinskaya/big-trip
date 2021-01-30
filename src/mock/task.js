@@ -8,7 +8,7 @@ const MIN_RANDOM_NUMBER_TYPES = 0;
 const MIN_PRICE = 20;
 const MAX_PRICE = 200;
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const generateAdditionalOptions = (appliedType) => {
   const offersFilteredByType = offersMock.find((offer) => {
