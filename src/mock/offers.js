@@ -7,11 +7,11 @@ export const offersMock = [
         price: 20
       },
       {
-        title: `Choose the radio station"`,
+        title: `Choose the radio station`,
         price: 5
       },
       {
-        title: `Choose the seat"`,
+        title: `Choose the seat`,
         price: 40
       },
       {
@@ -19,7 +19,7 @@ export const offersMock = [
         price: 400
       },
       {
-        title: `Choose the color"`,
+        title: `Choose the color`,
         price: 30
       }
     ]
@@ -61,7 +61,7 @@ export const offersMock = [
         price: 5
       },
       {
-        title: `Choose the seat"`,
+        title: `Choose the seat`,
         price: 40
       },
       {
@@ -86,7 +86,7 @@ export const offersMock = [
         price: 5
       },
       {
-        title: `Choose the seat"`,
+        title: `Choose the seat`,
         price: 40
       },
       {
@@ -111,7 +111,7 @@ export const offersMock = [
         price: 5
       },
       {
-        title: `Choose the seat"`,
+        title: `Choose the seat`,
         price: 40
       },
       {

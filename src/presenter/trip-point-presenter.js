@@ -24,6 +24,7 @@ export default class TripPointPresenter {
     this._onEscapeKeyDownFormToPoint = this._onEscapeKeyDownFormToPoint.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
+    this._handleEditFormClose = this._handleEditFormClose.bind(this);
   }
   init(tripPoint) {
     this._tripPoint = tripPoint;
@@ -35,7 +36,7 @@ export default class TripPointPresenter {
     this._tripPointComponent.setEditClickHandler(this._handleEditClick);
     this._tripPointComponent.setFavouriteClickHadler(this._handleFavoriteClick);
     this._tripPointEditComponent.setEditFormSubmitHandler(this._handleEditFormSubmit);
-    this._tripPointEditComponent.setEditFormCloseHandler(this._handleEditFormSubmit);
+    this._tripPointEditComponent.setEditFormCloseHandler(this._handleEditFormClose);
     this._tripPointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (previousTripPointComponent === null || previousTripPointEditComponent === null) {
@@ -84,6 +85,9 @@ export default class TripPointPresenter {
         UpdateType.MINOR,
         tripPoint
     );
+    this._replaceEditFormToPoint();
+  }
+  _handleEditFormClose() {
     this._replaceEditFormToPoint();
   }
   _handleDeleteClick(tripPoint) {

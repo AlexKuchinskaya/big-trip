@@ -7,7 +7,7 @@ export default class Observer {
     this._observers.push(observer);
   }
 
-  removeObservers(observer) {
+  removeObserver(observer) {
     this._observers = this._observers.filter((existingObserver) => existingObserver !== observer);
   }
 

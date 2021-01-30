@@ -26,8 +26,8 @@ export default class TripPresenter {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._tripsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    // this._tripsModel.addObserver(this._handleModelEvent);
+    // this._filterModel.addObserver(this._handleModelEvent);
     this._tripNewPresenter = new TripNewPresenter(this._pointsList, this._handleViewAction, this._destinations, this._offers);
   }
 
@@ -37,12 +37,23 @@ export default class TripPresenter {
     // this._renderSort();
     this._renderTripContent();
     render(this._tripContainer, this._pointsList, RenderPosition.BEFOREEND);
+    this._tripsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+  }
 
+  destroy() {
+    this._clearTripsArea({resetSortType: true});
+
+    remove(this._pointsList);
+    remove(this._tripSortingMenu);
+
+    this._tripsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   createNewTrip(callback) {
     this._currentSortType = SortTypes.DEFAULT;
-    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    // this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this._tripNewPresenter.init(callback);
   }
 
@@ -125,7 +136,6 @@ export default class TripPresenter {
   // }
 
   _handleViewAction(actionType, updateType, update) {
-    console.log(`actionType`, actionType)
     switch (actionType) {
       case UserAction.UPDATE_TRIP:
         this._tripsModel.updateTrip(updateType, update);
@@ -149,7 +159,7 @@ export default class TripPresenter {
         this._renderTripContent();
         break;
       case UpdateType.MAJOR:
-        this._clearTripsArea({resetSortType: true}); // мы передаем объект{resetSortType: true}?
+        this._clearTripsArea({resetSortType: true});
         this._renderTripContent();
         break;
     }

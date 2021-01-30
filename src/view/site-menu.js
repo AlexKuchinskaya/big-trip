@@ -2,7 +2,7 @@ import Abstract from "./abstract.js";
 import {MenuItem} from "../const/const.js";
 const createSiteMenuTemplate = () => {
   return `<nav class="trip-controls__trip-tabs  trip-tabs">
-    <a class="trip-tabs__btn" href="#" name="${MenuItem.TABLE}">Table</a>
+    <a class="trip-tabs__btn trip-tabs__btn--active" href="#" name="${MenuItem.TABLE}">Table</a>
     <a class="trip-tabs__btn" href="#" name="${MenuItem.STATS}">Stats</a>
   </nav>`;
 };
@@ -33,6 +33,7 @@ export default class SiteMenu extends Abstract {
   }
 
   setMenuItem(menuItem) {
+    console.log(`menuItem`, menuItem)
     const item = this.getElement().querySelector(`[name=${menuItem}]`);
 
     if (item !== null) {

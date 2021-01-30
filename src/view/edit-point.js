@@ -1,5 +1,5 @@
 import {types} from "../const/const.js";
-import Abstract from "./abstract.js";
+import SmartView from "./smart-view.js";
 import flatpickr from "flatpickr";
 import dayjs from "dayjs";
 import he from "he";
@@ -102,7 +102,7 @@ const createEditingPointTemplate = (data, destinations, offers) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeTripPoint}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${generateDestinations(destinations)}
           </datalist>
@@ -145,7 +145,7 @@ const createEditingPointTemplate = (data, destinations, offers) => {
   </li>`;
 };
 
-export default class EditingTripPoint extends Abstract {
+export default class EditingTripPoint extends SmartView {
   constructor(tripData, destinations, offers) {
     super();
     this._destinations = destinations;
@@ -190,28 +190,6 @@ export default class EditingTripPoint extends Abstract {
         {},
         data
     );
-  }
-  updateData(newData, justDataUpdating) {
-    if (!newData) {
-      return;
-    }
-    this._data = Object.assign(
-        {},
-        this._data,
-        newData
-    );
-    if (justDataUpdating) {
-      return;
-    }
-    this.updateElement();
-  }
-  updateElement() {
-    let previousELement = this.getElement();
-    const parent = previousELement.parentElement;
-    this.removeElement();
-    const newElement = this.getElement();
-    parent.replaceChild(newElement, previousELement);
-    this.restoreHandlers();
   }
 
   _typeTripChangeHandler(evt) {
@@ -291,7 +269,7 @@ export default class EditingTripPoint extends Abstract {
     this._setInnerHandlers();
     this._setStartDatepicker();
     this._setEndtDatepicker();
-    this.setEditFormSubmitHandler(this._callback.editFormSubmit); // зачем нам их восстанавливать, зачем this._callback.editFormSubmit
+    this.setEditFormSubmitHandler(this._callback.editFormSubmit); // зачем нам их восстанавливать, зачем
     this.setEditFormCloseHandler(this._callback.editFormClose); // зачем нам восстанавливтаь их
     this.setDeleteClickHandler(this._callback.deleteClick);
   }
