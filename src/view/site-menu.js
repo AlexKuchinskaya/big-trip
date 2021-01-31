@@ -20,10 +20,7 @@ export default class SiteMenu extends Abstract {
 
   _menuClickHandler(evt) {
     evt.preventDefault();
-    // const itemsMenu = this.getElement().querySelectorAll(`.trip-tabs__btn`);
-    // itemsMenu.forEach((element) => {
-    //   element.classList.add(`trip-tabs__btn--active`);
-    // });
+
     this._callback.menuClick(evt.target.name);
   }
 
@@ -33,7 +30,6 @@ export default class SiteMenu extends Abstract {
   }
 
   setMenuItem(menuItem) {
-    console.log(`menuItem`, menuItem)
     const item = this.getElement().querySelector(`[name=${menuItem}]`);
 
     if (item !== null) {

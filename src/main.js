@@ -3,7 +3,7 @@ import SiteMenu from "./view/site-menu.js";
 import {generateTripPoint} from "./mock/task.js";
 import {destinationsMock} from "./mock/destinations.js";
 import {offersMock} from "./mock/offers.js";
-import {render, RenderPosition} from "./utils/render.js";
+import {render, RenderPosition, remove} from "./utils/render.js";
 import TripPresenter from "./presenter/trip-presenter.js";
 import TripsModel from "./model/trips-model.js";
 import FilterModel from "./model/filter-model.js";
@@ -29,25 +29,26 @@ render(tripControlsHeading, siteMenuComponent, RenderPosition.AFTEREND);
 
 const filterPresenter = new FilterPresenter(tripControlsMenu, filterModel);
 const tripContentPresenter = new TripPresenter(tripEventsContainer, destinationsMock, offersMock, tripsModel, filterModel);
-filterPresenter.init();
-tripContentPresenter.init();
-// render(tripEventsContainer, new StatisticsView(), RenderPosition.BEFOREEND);
 
 const handleTripNewFormClose = () => {
   document.querySelector(`.trip-main__event-add-btn`).disabled = false;
   // siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).disabled = false; // не работает со ссылкой
+  siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).removeAttribute(`style`);
   siteMenuComponent.setMenuItem(MenuItem.TABLE);
 };
-
+let statisticsComponent = null;
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
       tripContentPresenter.init();
-      // Скрыть статистику
+      if (statisticsComponent !== null) {
+        remove(statisticsComponent);
+      }
       break;
     case MenuItem.STATS:
       tripContentPresenter.destroy();
-      // Показать статистику
+      statisticsComponent = new StatisticsView(tripsModel.getTrips());
+      render(tripEventsContainer, statisticsComponent, RenderPosition.BEFOREEND);
       break;
   }
 };
@@ -56,11 +57,17 @@ siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
   evt.preventDefault();
   evt.target.disabled = true;
+  siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).style = `pointer-events: none`; // не работает со ссылкой
+  console.log(`statisticsComponent`, statisticsComponent)
+  if (statisticsComponent !== null) {
+    remove(statisticsComponent);
+  }
   tripContentPresenter.destroy();
   filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
   tripContentPresenter.init();
-  // siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).disabled = true;  // не работает со ссылкой
   siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).classList.remove(`trip-tabs__btn--active`);
   tripContentPresenter.createNewTrip(handleTripNewFormClose);
 });
-render(tripEventsContainer, new StatisticsView(tripsModel.getTrips()), RenderPosition.BEFOREEND);
+
+filterPresenter.init();
+tripContentPresenter.init();
