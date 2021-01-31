@@ -35,8 +35,9 @@ export default class TripPresenter {
     // this._tripPoints = tripPoints.slice(); // удалить вконце
     // this._originalTripPoints = tripPoints.slice(); // удалить вконце
     // this._renderSort();
-    this._renderTripContent();
+
     render(this._tripContainer, this._pointsList, RenderPosition.BEFOREEND);
+    this._renderTripContent();
     this._tripsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
   }
@@ -85,7 +86,7 @@ export default class TripPresenter {
       this._tripSortingMenu = null;
     }
     this._tripSortingMenu = new SortingTrip(this._currentSortType);
-    render(this._tripContainer, this._tripSortingMenu, RenderPosition.BEFOREEND);
+    render(this._tripContainer, this._tripSortingMenu, RenderPosition.AFTERBEGIN);
     this._tripSortingMenu.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 

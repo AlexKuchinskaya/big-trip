@@ -58,7 +58,6 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (e
   evt.preventDefault();
   evt.target.disabled = true;
   siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).style = `pointer-events: none`; // не работает со ссылкой
-  console.log(`statisticsComponent`, statisticsComponent)
   if (statisticsComponent !== null) {
     remove(statisticsComponent);
   }
