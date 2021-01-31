@@ -33,6 +33,12 @@ export const formatTimeDifferenceBetweenDates = (startDate, endDate) => {
   return formatTimeDifference(diffInMs);
 };
 
+export const getDurationInDays = (startDate, endDate) => {
+  // const duration = dayjs.duration(endDate.diff(startDate));
+  // return diffInMs.duration.asDays();
+  return endDate.diff(startDate, `day`);
+};
+
 export const formatTime = (date) => {
   return date.format(`HH:mm`);
 };

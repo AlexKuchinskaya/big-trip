@@ -2,6 +2,7 @@ import SmartView from "./smart-view.js";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {makeItemsUniq} from "../utils/statistics-utils.js";
+import {getDurationInDays} from "./date-formatting.js";
 
 const BAR_HEIGHT = 55;
 
@@ -195,18 +196,23 @@ const renderTypeChart = (typeCtx, trips) => {
 const renderTimeChart = (timeCtx, trips) => {
   const tripsTypes = trips.map((trip) => trip.typeTripPoint);
   const uniqTripTypes = makeItemsUniq(tripsTypes);
-  const calculateTypesRepeats = () => {
-    let typesRepeats = [];
+  const calculateTripDaysByTypes = () => {
+    let typesByDays = [];
     uniqTripTypes.forEach((uniqTripType) => {
-
       const tripsByUniqueType = trips.filter((trip) => {
         return trip.typeTripPoint === uniqTripType;
       });
-      const typesOfTripsByUniqueType = tripsByUniqueType.map((trip) => trip.typeTripPoint);
+      const startAndEndDateOfTripsByUniqueType = tripsByUniqueType.map((trip) => {
+        return getDurationInDays(trip.startDate, trip.endDate);
+      });
+      let sumOfDaysByUniqueType = 0;
 
-      typesRepeats.push(typesOfTripsByUniqueType.length);
+      startAndEndDateOfTripsByUniqueType.forEach((date) => {
+        sumOfDaysByUniqueType += date;
+      });
+      typesByDays.push(sumOfDaysByUniqueType);
     });
-    return typesRepeats;
+    return typesByDays;
   };
 
   return new Chart(timeCtx, {
@@ -215,7 +221,7 @@ const renderTimeChart = (timeCtx, trips) => {
     data: {
       labels: uniqTripTypes,
       datasets: [{
-        data: calculateTypesRepeats(),
+        data: calculateTripDaysByTypes(),
         backgroundColor: `#ffffff`,
         hoverBackgroundColor: `#ffffff`,
         anchor: `start`,
