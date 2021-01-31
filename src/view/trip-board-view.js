@@ -52,7 +52,7 @@ const createTripTableTemplate = (currentSortingElement) => {
 };
 
 export default class TripTable extends Absract {
-  getTemplate() {
-    return createTripTableTemplate();
-  }
+  // getTemplate() {
+  //   return createTripTableTemplate();
+  // }
 }

@@ -9,6 +9,7 @@ import TripsModel from "./model/trips-model.js";
 import FilterModel from "./model/filter-model.js";
 import FilterPresenter from "./presenter/filter-presenter.js";
 import {MenuItem, UpdateType, FilterType} from "./const/const.js";
+import StatisticsView from "./view/statistics.js";
 const TRIP_COUNT = 20;
 const trips = new Array(TRIP_COUNT).fill().map((el, index) => generateTripPoint(index));
 
@@ -30,6 +31,7 @@ const filterPresenter = new FilterPresenter(tripControlsMenu, filterModel);
 const tripContentPresenter = new TripPresenter(tripEventsContainer, destinationsMock, offersMock, tripsModel, filterModel);
 filterPresenter.init();
 tripContentPresenter.init();
+// render(tripEventsContainer, new StatisticsView(), RenderPosition.BEFOREEND);
 
 const handleTripNewFormClose = () => {
   document.querySelector(`.trip-main__event-add-btn`).disabled = false;
@@ -61,4 +63,4 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (e
   siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).classList.remove(`trip-tabs__btn--active`);
   tripContentPresenter.createNewTrip(handleTripNewFormClose);
 });
-
+render(tripEventsContainer, new StatisticsView(tripsModel.getTrips()), RenderPosition.BEFOREEND);
