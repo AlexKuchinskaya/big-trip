@@ -62,8 +62,6 @@ export default class TripsModel extends Observer {
         trip,
         {
           typeTripPoint: trip.type,
-          // startDate: trip.date_from !== null ? new Date(trip.date_from) : trip.date_from,
-          // endDate: trip.date_to !== null ? new Date(trip.date_to) : trip.date_to,
           startDate: trip.date_from ? dayjs(trip.date_from) : null,
           endDate: trip.date_to ? dayjs(trip.date_to) : null,
           price: trip.base_price,

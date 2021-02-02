@@ -20,7 +20,6 @@ export default class SiteMenu extends Abstract {
 
   _menuClickHandler(evt) {
     evt.preventDefault();
-
     this._callback.menuClick(evt.target.name);
   }
 

@@ -24,20 +24,14 @@ export default class TripPresenter {
     this._loadingComponent = new LoadingView();
     this._tripPrsenters = {};
     this._currentSortType = SortTypes.DEFAULT;
-    // this._handleTripChange = this._handleTripChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    // this._tripsModel.addObserver(this._handleModelEvent);
-    // this._filterModel.addObserver(this._handleModelEvent);
     this._tripNewPresenter = new TripNewPresenter(this._pointsList, this._handleViewAction, this._destinations, this._offers);
   }
 
   init() {
-    // this._tripPoints = tripPoints.slice(); // удалить вконце
-    // this._originalTripPoints = tripPoints.slice(); // удалить вконце
-    // this._renderSort();
 
     render(this._tripContainer, this._pointsList, RenderPosition.BEFOREEND);
 

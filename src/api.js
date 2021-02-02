@@ -13,12 +13,12 @@ const SuccessHTTPStatusRange = {
 
 export default class Api {
   constructor(endPoint, authorization) {
-    this._endPoint = endPoint; // адрес куда делаем запрос
-    this._authorization = authorization; // строка авторизации
+    this._endPoint = endPoint;
+    this._authorization = authorization;
   }
 
   getTrips() {
-    return this._load({url: `points`}) // реализация настройки fetch
+    return this._load({url: `points`})
       .then(Api.toJSON)
       .then((points) => points.map(TripsModel.adaptToClient));
   }
@@ -61,7 +61,7 @@ export default class Api {
       method: Method.DELETE
     });
   }
-  _load({ // приватный метод, который принимает настройки
+  _load({
     url,
     method = Method.GET,
     body = null,
@@ -77,7 +77,7 @@ export default class Api {
       .catch(Api.catchError);
   }
 
-  static checkStatus(response) { // проверка статуса из периода 200
+  static checkStatus(response) {
     if (
       response.status < SuccessHTTPStatusRange.MIN ||
       response.status > SuccessHTTPStatusRange.MAX

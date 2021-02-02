@@ -1,6 +1,5 @@
 import InformationTrip from "./view/information-trip.js";
 import SiteMenu from "./view/site-menu.js";
-// import {generateTripPoint} from "./mock/task.js";
 import {destinationsMock} from "./mock/destinations.js";
 import {offersMock} from "./mock/offers.js";
 import {render, RenderPosition, remove} from "./utils/render.js";
@@ -11,10 +10,8 @@ import FilterPresenter from "./presenter/filter-presenter.js";
 import {MenuItem, UpdateType, FilterType} from "./const/const.js";
 import StatisticsView from "./view/statistics.js";
 import Api from "./api.js";
-// const TRIP_COUNT = 20;
 const AUTHORIZATION = `Basic ponmlkjihgfedcba`;
 const END_POINT = `https://13.ecmascript.pages.academy/big-trip`;
-// const trips = new Array(TRIP_COUNT).fill().map((el, index) => generateTripPoint(index));
 const api = new Api(END_POINT, AUTHORIZATION);
 
 
@@ -75,8 +72,8 @@ tripContentPresenter.init();
 api.getTrips()
   .then((points) => {
     tripsModel.setTrips(UpdateType.INIT, points);
-    // render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
-    // siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+    render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
+    siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
   })
   .catch((error) => {
