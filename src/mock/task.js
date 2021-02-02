@@ -14,7 +14,7 @@ const generateAdditionalOptions = (appliedType) => {
   const offersFilteredByType = offersMock.find((offer) => {
     return offer.type === appliedType;
   });
-  const randomAdditionalOptions = getRandomNumberOfElements(offersFilteredByType.allOffers, 0, 5);
+  const randomAdditionalOptions = getRandomNumberOfElements(offersFilteredByType.offers, 0, 5);
   return randomAdditionalOptions;
 };
 

@@ -2,23 +2,26 @@ import SortingTrip from "../view/sorting.js";
 import TripPointMessage from "../view/no-trip-point.js";
 import PointsList from "../view/points-list.js";
 import {remove, render, RenderPosition} from "../utils/render.js";
-import TripPointPresenter from "./trip-point-presenter.js";
+import TripPointPresenter, {State as TripPresenterViewState} from "./trip-point-presenter.js";
 import TripNewPresenter from "./trip-new-presenter.js";
-import {updateItems} from "../utils/common.js";
+import LoadingView from "../view/loading-view.js";
 import {sortTripsByPrice, sortingByTime} from "../utils/trips-sorting.js";
 import {SortTypes, UserAction, UpdateType} from "../const/const.js";
 import {filter} from "../utils/filter-utils.js";
 
 export default class TripPresenter {
-  constructor(tripContainer, destinations, offers, tripsModel, filterModel) {
+  constructor(tripContainer, offers, tripsModel, filterModel, api, destinations) {
     this._tripsModel = tripsModel;
     this._filterModel = filterModel;
     this._destinations = destinations;
     this._tripContainer = tripContainer;
     this._offers = offers;
-    this._pointsList = new PointsList();
+    this._isLoading = true;
+    this._api = api;
     this._tripSortingMenu = null;
+    this._pointsList = new PointsList();
     this._noTripComponent = new TripPointMessage();
+    this._loadingComponent = new LoadingView();
     this._tripPrsenters = {};
     this._currentSortType = SortTypes.DEFAULT;
     // this._handleTripChange = this._handleTripChange.bind(this);
@@ -37,11 +40,16 @@ export default class TripPresenter {
     // this._renderSort();
 
     render(this._tripContainer, this._pointsList, RenderPosition.BEFOREEND);
-    this._renderTripContent();
+
     this._tripsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
-  }
 
+    this._renderTripContent();
+  }
+  setDestinations(destinations) {
+    this._destinations = destinations;
+    return this._destinations;
+  }
   destroy() {
     this._clearTripsArea({resetSortType: true});
 
@@ -99,7 +107,6 @@ export default class TripPresenter {
   }
 
   _renderTripPointsList(trips) {
-    // const trips = this._getTrips().slice();
     trips.forEach((trip) => this._renderTripPoint(trip));
   }
 
@@ -108,14 +115,24 @@ export default class TripPresenter {
   }
 
   _renderTripContent() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const trips = this._getTrips();
     const tripsLenght = trips.length;
+
     if (tripsLenght === 0) {
       this._renderNoTripMessage();
       return;
     }
     this._renderSort();
     this._renderTripPointsList(trips);
+  }
+
+  _renderLoading() {
+    render(this._pointsList, this._loadingComponent, RenderPosition.AFTERBEGIN);
   }
 
   _clearTripsArea({resetSortType = false} = {}) {
@@ -128,24 +145,39 @@ export default class TripPresenter {
     if (resetSortType) {
       this._currentSortType = SortTypes.DEFAULT;
     }
-
   }
-  // _handleTripChange(updatedTrip) {
-  //   // this._tripPoints = updateItems(this._tripPoints, updatedTrip); удалить вконце
-  //   // Здесь будем вызывать обновление модели
-  //   this._tripPrsenters[updatedTrip.id].init(updatedTrip);
-  // }
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TRIP:
-        this._tripsModel.updateTrip(updateType, update);
+        this._tripPrsenters[update.id].setViewState(TripPresenterViewState.SAVING);
+        this._api.updateTrip(update).
+          then((response) => {
+            this._tripsModel.updateTrip(updateType, response);
+          })
+          .catch(() => {
+            this._tripPrsenters[update.id].setViewState(TripPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_TRIP:
-        this._tripsModel.addTrip(updateType, update);
+        this._tripNewPresenter.setSaving();
+        this._api.addTrip(update).
+          then((response) => {
+            this._tripsModel.addTrip(updateType, response);
+          })
+          .catch(() => {
+            this._tripNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_TRIP:
-        this._tripsModel.deleteTrip(updateType, update);
+        this._tripPrsenters[update.id].setViewState(TripPresenterViewState.DELETING);
+        this._api.deleteTrip(update)
+          .then(() => {
+            this._tripsModel.deleteTrip(updateType, update);
+          })
+          .catch(() => {
+            this._tripPrsenters[update.id].setViewState(TripPresenterViewState.ABORTING);
+          })
         break;
     }
   }
@@ -161,6 +193,11 @@ export default class TripPresenter {
         break;
       case UpdateType.MAJOR:
         this._clearTripsArea({resetSortType: true});
+        this._renderTripContent();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderTripContent();
         break;
     }

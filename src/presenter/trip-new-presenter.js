@@ -1,6 +1,5 @@
 import EditingTripPoint from "../view/edit-point.js";
 import {render, RenderPosition, remove} from "../utils/render.js";
-import {generateId} from "../mock/task.js";
 import {UserAction, UpdateType} from "../const/const.js";
 
 export default class TripNewPresenter {
@@ -46,16 +45,19 @@ export default class TripNewPresenter {
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
 
+  setSaving() {
+    this._tripNewPointComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
   _handleFormSubmit(trip) {
     this._changeData(
         UserAction.ADD_TRIP,
         UpdateType.MINOR,
-        Object.assign(
-            {id: generateId()},
-            trip
-        )
+        trip
     );
-    this.destroy();
   }
 
   _handleDeleteClick() {

@@ -8,6 +8,12 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ABORTING: `ABORTING`
+};
+
 export default class TripPointPresenter {
   constructor(tripListElement, changeData, changeMode, detinations, offers) {
     this._tripListElement = tripListElement;
@@ -50,11 +56,41 @@ export default class TripPointPresenter {
 
     if (this._mode === Mode.EDITING) {
       replace(this._tripPointEditComponent, previousTripPointEditComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(previousTripPointComponent);
     remove(previousTripPointEditComponent);
   }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._tripPointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+    switch (state) {
+      case State.SAVING:
+        this._tripPointEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._tripPointEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ABORTING:
+        this._tripPointComponent.shake(resetFormState);
+        this._tripPointEditComponent.shake(resetFormState);
+        break;
+    }
+  }
+
   _replacePointToEditForm() {
     replace(this._tripPointEditComponent, this._tripPointComponent);
     document.addEventListener(`keydown`, this._onEscapeKeyDownFormToPoint);
@@ -85,7 +121,6 @@ export default class TripPointPresenter {
         UpdateType.MINOR,
         tripPoint
     );
-    this._replaceEditFormToPoint();
   }
   _handleEditFormClose() {
     this._replaceEditFormToPoint();
