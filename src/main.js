@@ -67,28 +67,46 @@ document.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (e
 
 render(tripControlsHeading, siteMenuComponent, RenderPosition.AFTEREND);
 filterPresenter.init();
-tripContentPresenter.init();
+// tripContentPresenter.init();
 
-api.getTrips()
-  .then((points) => {
-    tripsModel.setTrips(UpdateType.INIT, points);
+
+Promise.all([
+  api.getTrips(),
+  api.getDestinations(),
+  api.getOffers()
+])
+  .then(([trips, destinations, offers]) => {
+    tripContentPresenter.setDestinations(destinations);
+    tripContentPresenter.setOffers(offers);
+    tripContentPresenter.init();
+    tripsModel.setTrips(UpdateType.INIT, trips);
     render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-
   })
-  .catch((error) => {
-    tripsModel.setTrips(UpdateType.INIT, []);
-    render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
-    siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-    throw error;
-  });
 
-api.getDestinations()
-  .then((destinations) => {
-    // tripContentPresenter.setDestinations(destinations);
-  });
 
-api.getOffers()
-  .then((offers) => {
-    // tripContentPresenter.setDestinations(destinations);
-  });
+
+
+// api.getTrips()
+//   .then((points) => {
+//     tripsModel.setTrips(UpdateType.INIT, points);
+//     render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
+//     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+
+//   })
+//   .catch((error) => {
+//     tripsModel.setTrips(UpdateType.INIT, []);
+//     render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
+//     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+//     throw error;
+//   });
+
+// api.getDestinations()
+//   .then((destinations) => {
+//     // tripContentPresenter.setDestinations(destinations);
+//   });
+
+// api.getOffers()
+//   .then((offers) => {
+//     // tripContentPresenter.setDestinations(destinations);
+//   });

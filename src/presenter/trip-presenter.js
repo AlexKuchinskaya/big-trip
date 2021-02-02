@@ -38,11 +38,13 @@ export default class TripPresenter {
     this._tripsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
 
-    this._renderTripContent();
+    // this._renderTripContent();
   }
   setDestinations(destinations) {
     this._destinations = destinations;
-    return this._destinations;
+  }
+  setOffers(offers) {
+    this.offers = offers;
   }
   destroy() {
     this._clearTripsArea({resetSortType: true});

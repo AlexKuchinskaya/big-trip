@@ -11,6 +11,14 @@ const formatIntegerWithTwoDigits = (number) => {
 
 
 export const getTimeDifferenceInMs = (startDate, endDate) => {
+  console.log(`endDate`, endDate)
+  console.log(`startDate`, startDate)
+  if (startDate === null) {
+    startDate = 0;
+  }
+  if (endDate === null) {
+    endDate = 0;
+  }
   return endDate.diff(startDate);
 };
 
