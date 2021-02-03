@@ -1,15 +1,16 @@
 import Abstract from "./abstract";
+import he from "he";
 import {formatTime, formatTimeDifferenceBetweenDates, formatDate} from "./date-formatting";
 
 const createPointTripTemplate = (pointTrip) => {
-  const {additionalOptions, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
+  const {appliedOffers, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
   const createExtraOffersListItem = () => {
-    if (additionalOptions.length !== 0) {
-      return additionalOptions.map((additionalOption) =>
+    if (appliedOffers.length !== 0) {
+      return appliedOffers.map((appliedOffer) =>
         `<li class="event__offer">
-          <span class="event__offer-title">${additionalOption.name}</span>
+          <span class="event__offer-title">${appliedOffer.title}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${additionalOption.price}</span>
+          <span class="event__offer-price">${appliedOffer.price}</span>
         </li>`).join(``);
     } else {
       return ``;
@@ -22,7 +23,7 @@ const createPointTripTemplate = (pointTrip) => {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${typeTripPoint}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${typeTripPoint} ${destination}</h3>
+      <h3 class="event__title">${typeTripPoint} ${he.encode(destination)}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${startDate.format()}">${formatTime(startDate)}</time>

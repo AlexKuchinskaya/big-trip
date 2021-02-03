@@ -1,3 +1,16 @@
+export const types = [
+  `taxi`,
+  `bus`,
+  `train`,
+  `ship`,
+  `transport`,
+  `drive`,
+  `flight`,
+  `check-in`,
+  `sightseeing`,
+  `restaurant`
+];
+
 export const sortingElements = [
   {
     sortType: `default`,
@@ -34,3 +47,22 @@ export const SortTypes = {
   PRICE_UP: `price`,
   TIME_UP: `time`
 };
+
+export const UserAction = {
+  ADD_TRIP: `ADD_TRIP`,
+  DELETE_TRIP: `DELETE_TRIP`,
+  UPDATE_TRIP: `UPDATE_TRIP`
+};
+
+export const UpdateType = {
+  PATCH: `PATCH`,
+  MINOR: `MINOR`,
+  MAJOR: `MAJOR`
+};
+
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
+};
+

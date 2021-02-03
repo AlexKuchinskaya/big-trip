@@ -1,15 +1,18 @@
 import PointTrip from "../view/point-trip.js";
 import EditingTripPoint from "../view/edit-point.js";
 import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import {UserAction, UpdateType} from "../const/const.js";
 
 const Mode = {
   DEFAULT: `DEFAULT`,
   EDITING: `EDITING`
 };
 
-export default class PointTripPresenter {
-  constructor(tripListElement, changeData, changeMode) {
+export default class TripPointPresenter {
+  constructor(tripListElement, changeData, changeMode, detinations, offers) {
     this._tripListElement = tripListElement;
+    this._detinations = detinations;
+    this._offers = offers;
     this._changeData = changeData;
     this._changeMode = changeMode;
     this._tripPointComponent = null;
@@ -20,18 +23,20 @@ export default class PointTripPresenter {
     this._handleEditFormSubmit = this._handleEditFormSubmit.bind(this);
     this._onEscapeKeyDownFormToPoint = this._onEscapeKeyDownFormToPoint.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
   }
   init(tripPoint) {
     this._tripPoint = tripPoint;
     const previousTripPointComponent = this._tripPointComponent;
     const previousTripPointEditComponent = this._tripPointEditComponent;
     this._tripPointComponent = new PointTrip(tripPoint);
-    this._tripPointEditComponent = new EditingTripPoint(tripPoint);
+    this._tripPointEditComponent = new EditingTripPoint(tripPoint, this._detinations, this._offers);
 
     this._tripPointComponent.setEditClickHandler(this._handleEditClick);
     this._tripPointComponent.setFavouriteClickHadler(this._handleFavoriteClick);
     this._tripPointEditComponent.setEditFormSubmitHandler(this._handleEditFormSubmit);
     this._tripPointEditComponent.setEditFormCloseHandler(this._handleEditFormSubmit);
+    this._tripPointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (previousTripPointComponent === null || previousTripPointEditComponent === null) {
       render(this._tripListElement, this._tripPointComponent, RenderPosition.BEFOREEND);
@@ -73,11 +78,25 @@ export default class PointTripPresenter {
   _handleEditClick() {
     this._replacePointToEditForm();
   }
-  _handleEditFormSubmit() {
+  _handleEditFormSubmit(tripPoint) {
+    this._changeData(
+        UserAction.UPDATE_TRIP,
+        UpdateType.MINOR,
+        tripPoint
+    );
     this._replaceEditFormToPoint();
+  }
+  _handleDeleteClick(tripPoint) {
+    this._changeData(
+        UserAction.DELETE_TRIP,
+        UpdateType.MINOR,
+        tripPoint
+    );
   }
   _handleFavoriteClick() {
     this._changeData(
+        UserAction.UPDATE_TRIP,
+        UpdateType.MINOR,
         Object.assign(
             {},
             this._tripPoint,
