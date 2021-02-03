@@ -11,14 +11,6 @@ const formatIntegerWithTwoDigits = (number) => {
 
 
 export const getTimeDifferenceInMs = (startDate, endDate) => {
-  console.log(`endDate`, endDate)
-  console.log(`startDate`, startDate)
-  if (startDate === null) {
-    startDate = 0;
-  }
-  if (endDate === null) {
-    endDate = 0;
-  }
   return endDate.diff(startDate);
 };
 
@@ -42,9 +34,7 @@ export const formatTimeDifferenceBetweenDates = (startDate, endDate) => {
 };
 
 export const getDurationInDays = (startDate, endDate) => {
-  // const duration = dayjs.duration(endDate.diff(startDate));
-  // return diffInMs.duration.asDays();
-  return endDate.diff(startDate, `day`);
+  return endDate.diff(startDate, `day`, true);
 };
 
 export const formatTime = (date) => {

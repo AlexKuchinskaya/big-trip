@@ -2,8 +2,6 @@ import {types} from "../const/const.js";
 import SmartView from "./smart-view.js";
 import flatpickr from "flatpickr";
 import dayjs from "dayjs";
-import he from "he";
-
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 export const generateTripsTypesOptions = (isDisabled) => {
@@ -23,7 +21,9 @@ export const generateTripsTypesOptions = (isDisabled) => {
 };
 
 export const generateDestinations = (destinations, isDisabled) => {
-  return destinations.map((destinationValue) => `<option value="${destinationValue.name}" ${isDisabled ? `disabled` : ``}></option>`).join(``);
+  return destinations.map((destinationValue) => (
+    `<option value="${destinationValue.name}" ${isDisabled ? `disabled` : ``}></option>`
+  )).join(``);
 };
 
 export const findOffersByType = (allPossibleoffers, type) => {
@@ -73,7 +73,7 @@ const generateImageTemplate = (pictures) => {
   }).join(``);
 };
 
-export const createDestionationInfoTemplate = (destination, destinations) => {
+const createDestionationInfoTemplate = (destination, destinations) => {
   const foundDestinationInfo = destinations.find((_destination) => {
     return _destination.name === destination.name;
   });
@@ -119,8 +119,15 @@ const createEditingPointTemplate = (data, destinations, offers) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeTripPoint}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1"
-          ${isDisabled ? `disabled` : ``}>
+          <input
+            class="event__input  event__input--destination"
+            id="event-destination-1"
+            type="text"
+            name="event-destination"
+            value="${destination ? destination.name : ``}"
+            list="destination-list-1"
+            ${isDisabled ? `disabled` : ``}
+          >
           <datalist id="destination-list-1">
             ${generateDestinations(destinations, isDisabled)}
           </datalist>
@@ -139,7 +146,13 @@ const createEditingPointTemplate = (data, destinations, offers) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}" ${isDisabled ? `disabled` : ``}>
+          <input
+            class="event__input  event__input--price"
+            id="event-price-1"
+            type="text"
+            name="event-price"
+            value="${price}" ${isDisabled ? `disabled` : ``}
+          >
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>
@@ -161,7 +174,7 @@ const createEditingPointTemplate = (data, destinations, offers) => {
           </div>
         </section>
 
-        ${createDestionationInfoTemplate(destination, destinations)}
+        ${destination && createDestionationInfoTemplate(destination, destinations)}
       </section>
     </form>
   </li>`;
@@ -256,7 +269,7 @@ export default class EditingTripPoint extends SmartView {
         this.getElement().querySelector(`#event-start-time-1`),
         {
           enableTime: true,
-          time_24hr: true,
+          time_24hr: true, // eslint-disable-line
           defaultDate: this._data.startDate ? this._data.startDate.toDate() : null,
           onChange: this._startDateChangeHandler
         }
@@ -272,7 +285,7 @@ export default class EditingTripPoint extends SmartView {
         this.getElement().querySelector(`#event-end-time-1`),
         {
           enableTime: true,
-          time_24hr: true,
+          time_24hr: true, // eslint-disable-line
           defaultDate: this._data.endDate ? this._data.endDate.toDate() : null,
           onChange: this._endDateChangeHandler
         }
@@ -301,7 +314,7 @@ export default class EditingTripPoint extends SmartView {
     this._setStartDatepicker();
     this._setEndtDatepicker();
     this.setEditFormSubmitHandler(this._callback.editFormSubmit); // зачем нам их восстанавливать, зачем
-    this.setEditFormCloseHandler(this._callback.editFormClose); // зачем нам восстанавливтаь их
+    this.setCloseFormHandler(this._callback.editFormClose); // зачем нам восстанавливтаь их
     this.setDeleteClickHandler(this._callback.deleteClick);
   }
   _priceInputHandler(evt) {
@@ -347,7 +360,7 @@ export default class EditingTripPoint extends SmartView {
     this._callback.editFormSubmit = callback;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._editFormSubmitHandler);
   }
-  setEditFormCloseHandler(callback) {
+  setCloseFormHandler(callback) {
     this._callback.editFormClose = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormCloseHandler);
   }

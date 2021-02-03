@@ -1,9 +1,9 @@
 import Abstract from "./abstract";
-import he from "he";
 import {formatTime, formatTimeDifferenceBetweenDates, formatDate} from "./date-formatting";
 
 const createPointTripTemplate = (pointTrip) => {
   const {appliedOffers, startDate, endDate, typeTripPoint, destination, price, isFavorite} = pointTrip;
+
   const createExtraOffersListItem = () => {
     if (appliedOffers.length !== 0) {
       return appliedOffers.map((appliedOffer) =>
@@ -16,6 +16,7 @@ const createPointTripTemplate = (pointTrip) => {
       return ``;
     }
   };
+
   const favoriteClassName = isFavorite ? `event__favorite-btn--active` : ``;
   return `<li class="trip-events__item">
     <div class="event">

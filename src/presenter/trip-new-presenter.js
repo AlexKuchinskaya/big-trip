@@ -3,27 +3,31 @@ import {render, RenderPosition, remove} from "../utils/render.js";
 import {UserAction, UpdateType} from "../const/const.js";
 
 export default class TripNewPresenter {
-  constructor(tripListElement, changeData, destinations, offers) {
+  constructor(tripListElement, changeData) {
     this._tripListElement = tripListElement;
     this._changeData = changeData;
-    this._destinations = destinations;
-    this._offers = offers;
+    this._destinations = null;
+    this._offers = null;
 
     this._tripNewPointComponent = null;
     this._destroyCallback = null;
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleFormClose = this._handleFormClose.bind(this);
   }
 
-  init(callback) {
-    this._destroyCallback = callback;
+  init(destroyCallback, destinations, offers) {
+    this._destroyCallback = destroyCallback;
+    this._destinations = destinations;
+    this._offers = offers;
     if (this._tripNewPointComponent !== null) {
       return;
     }
     this._tripNewPointComponent = new EditingTripPoint(undefined, this._destinations, this._offers);
     this._tripNewPointComponent.setEditFormSubmitHandler(this._handleFormSubmit);
     this._tripNewPointComponent.setDeleteClickHandler(this._handleDeleteClick);
+    this._tripNewPointComponent.setCloseFormHandler(this._handleFormClose);
 
     render(this._tripListElement, this._tripNewPointComponent, RenderPosition.AFTERBEGIN);
 
@@ -61,6 +65,10 @@ export default class TripNewPresenter {
   }
 
   _handleDeleteClick() {
+    this.destroy();
+  }
+
+  _handleFormClose() {
     this.destroy();
   }
 

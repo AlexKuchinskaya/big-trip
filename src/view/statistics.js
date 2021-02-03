@@ -237,7 +237,7 @@ const renderTimeChart = (timeCtx, trips) => {
           color: `#000000`,
           anchor: `end`,
           align: `start`,
-          formatter: (val) => `${val}D`
+          formatter: (val) => `${val.toFixed(1)}D`
         }
       },
       title: {
@@ -307,9 +307,10 @@ export default class Statistics extends SmartView {
   }
 
   _setCharts() {
-    if (this._typeChart !== null || this._moneyChart !== null) {
+    if (this._typeChart !== null || this._moneyChart !== null || this._timeChart !== null) {
       this._typeChart = null;
       this._moneyChart = null;
+      this._timeChart = null;
     }
 
     const moneyCtx = this.getElement().querySelector(`.statistics__chart--money`);

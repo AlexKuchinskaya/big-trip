@@ -5,17 +5,17 @@ import {remove, render, RenderPosition} from "../utils/render.js";
 import TripPointPresenter, {State as TripPresenterViewState} from "./trip-point-presenter.js";
 import TripNewPresenter from "./trip-new-presenter.js";
 import LoadingView from "../view/loading-view.js";
-import {sortTripsByPrice, sortingByTime} from "../utils/trips-sorting.js";
+import {sortTripsByPrice, sortingByTripDuration, sortingByTripStartDate} from "../utils/trips-sorting.js";
 import {SortTypes, UserAction, UpdateType} from "../const/const.js";
 import {filter} from "../utils/filter-utils.js";
 
 export default class TripPresenter {
-  constructor(tripContainer, offers, tripsModel, filterModel, api, destinations) {
+  constructor(tripContainer, tripsModel, filterModel, api) {
     this._tripsModel = tripsModel;
     this._filterModel = filterModel;
-    this._destinations = destinations;
+    this._destinations = null;
     this._tripContainer = tripContainer;
-    this._offers = offers;
+    this._offers = null;
     this._isLoading = true;
     this._api = api;
     this._tripSortingMenu = null;
@@ -28,23 +28,22 @@ export default class TripPresenter {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._tripNewPresenter = new TripNewPresenter(this._pointsList, this._handleViewAction, this._destinations, this._offers);
+    this._tripNewPresenter = new TripNewPresenter(this._pointsList, this._handleViewAction);
   }
 
   init() {
-
     render(this._tripContainer, this._pointsList, RenderPosition.BEFOREEND);
 
     this._tripsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
 
-    // this._renderTripContent();
+    this._renderTripContent();
   }
   setDestinations(destinations) {
     this._destinations = destinations;
   }
   setOffers(offers) {
-    this.offers = offers;
+    this._offers = offers;
   }
   destroy() {
     this._clearTripsArea({resetSortType: true});
@@ -59,7 +58,7 @@ export default class TripPresenter {
   createNewTrip(callback) {
     this._currentSortType = SortTypes.DEFAULT;
     // this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._tripNewPresenter.init(callback);
+    this._tripNewPresenter.init(callback, this._destinations, this._offers);
   }
 
   _getTrips() {
@@ -67,13 +66,13 @@ export default class TripPresenter {
     const trips = this._tripsModel.getTrips();
     const filteredTrips = filter[filterType](trips);
 
-    switch (this._currentSortType) {
-      case SortTypes.PRICE_UP:
-        return filteredTrips.sort(sortTripsByPrice);
-      case SortTypes.TIME_UP:
-        return filteredTrips.sort(sortingByTime);
+    if (this._currentSortType === SortTypes.PRICE_UP) {
+      return filteredTrips.sort(sortTripsByPrice);
     }
-    return filteredTrips;
+    if (this._currentSortType === SortTypes.TIME_UP) {
+      return filteredTrips.sort(sortingByTripDuration);
+    }
+    return filteredTrips.sort(sortingByTripStartDate);
   }
 
   _handleSortTypeChange(sortType) {
@@ -173,7 +172,7 @@ export default class TripPresenter {
           })
           .catch(() => {
             this._tripPrsenters[update.id].setViewState(TripPresenterViewState.ABORTING);
-          })
+          });
         break;
     }
   }
