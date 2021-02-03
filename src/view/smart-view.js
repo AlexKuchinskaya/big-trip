@@ -1,4 +1,5 @@
 import Abstract from "./abstract";
+import {replace} from "../utils/render.js";
 
 export default class SmartView extends Abstract {
   constructor() {
@@ -22,11 +23,10 @@ export default class SmartView extends Abstract {
   }
 
   updateElement() {
-    let previousELement = this.getElement();
-    const parent = previousELement.parentElement;
+    const previousElement = this.getElement();
     this.removeElement();
     const newElement = this.getElement();
-    parent.replaceChild(newElement, previousELement);
+    replace(newElement, previousElement);
     this.restoreHandlers();
   }
 

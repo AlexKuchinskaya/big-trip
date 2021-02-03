@@ -29,7 +29,7 @@ const renderMoneyChart = (moneyCtx, trips) => {
   const tripsTypes = trips.map((trip) => trip.typeTripPoint);
   const uniqTripTypes = makeItemsUniq(tripsTypes);
   const calculatePricesByTripTypes = () => {
-    let pricesArray = [];
+    const pricesArray = [];
     uniqTripTypes.forEach((uniqTripType) => {
       const tripsByUniqueType = trips.filter((trip) => {
         return trip.typeTripPoint === uniqTripType;
@@ -115,7 +115,7 @@ const renderTypeChart = (typeCtx, trips) => {
   const tripsTypes = trips.map((trip) => trip.typeTripPoint);
   const uniqTripTypes = makeItemsUniq(tripsTypes);
   const calculateTypesRepeats = () => {
-    let typesRepeats = [];
+    const typesRepeats = [];
     uniqTripTypes.forEach((uniqTripType) => {
       const tripsByUniqueType = trips.filter((trip) => {
         return trip.typeTripPoint === uniqTripType;
@@ -196,7 +196,7 @@ const renderTimeChart = (timeCtx, trips) => {
   const tripsTypes = trips.map((trip) => trip.typeTripPoint);
   const uniqTripTypes = makeItemsUniq(tripsTypes);
   const calculateTripDaysByTypes = () => {
-    let typesByDays = [];
+    const typesByDays = [];
     uniqTripTypes.forEach((uniqTripType) => {
       const tripsByUniqueType = trips.filter((trip) => {
         return trip.typeTripPoint === uniqTripType;

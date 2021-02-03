@@ -99,6 +99,7 @@ export default class TripPointPresenter {
   }
   _replaceEditFormToPoint() {
     replace(this._tripPointComponent, this._tripPointEditComponent);
+    document.createElement(`div`).appendChild(this._tripPointEditComponent.getElement());
     document.removeEventListener(`keydown`, this._onEscapeKeyDownFormToPoint);
     this._mode = Mode.DEFAULT;
   }
