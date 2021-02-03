@@ -43,7 +43,7 @@ export default class TripPointFiltersView extends Absract {
 
   _filterTypeChangeHandler(evt) {
     evt.preventDefault();
-    this._callback.filterTypeChange(evt.target.value); // зачем здесь evt.target.value?
+    this._callback.filterTypeChange(evt.target.value);
   }
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;

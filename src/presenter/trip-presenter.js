@@ -57,7 +57,6 @@ export default class TripPresenter {
 
   createNewTrip(callback) {
     this._currentSortType = SortTypes.DEFAULT;
-    // this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this._tripNewPresenter.init(callback, this._destinations, this._offers);
   }
 

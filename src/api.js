@@ -31,7 +31,6 @@ export default class Api {
   getOffers() {
     return this._load({url: `offers`})
       .then(Api.toJSON);
-  // .then((offers) => offers.map(TripsModel.adaptOffersToClient));
   }
   updateTrip(point) {
     return this._load({

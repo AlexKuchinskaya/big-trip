@@ -30,7 +30,6 @@ const tripContentPresenter = new TripPresenter(tripEventsContainer, tripsModel, 
 
 const handleTripNewFormClose = () => {
   document.querySelector(`.trip-main__event-add-btn`).disabled = false;
-  // siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).disabled = false; // не работает со ссылкой
   siteMenuComponent.getElement().querySelector(`[name="${MenuItem.TABLE}"]`).removeAttribute(`style`);
   siteMenuComponent.setMenuItem(MenuItem.TABLE);
 };
@@ -82,26 +81,3 @@ Promise.all([
     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
   });
 
-// api.getTrips()
-//   .then((points) => {
-//     tripsModel.setTrips(UpdateType.INIT, points);
-//     render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
-//     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-
-//   })
-//   .catch((error) => {
-//     tripsModel.setTrips(UpdateType.INIT, []);
-//     render(tripMainHeaderContainer, new InformationTrip(), RenderPosition.AFTERBEGIN);
-//     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
-//     throw error;
-//   });
-
-// api.getDestinations()
-//   .then((destinations) => {
-//     // tripContentPresenter.setDestinations(destinations);
-//   });
-
-// api.getOffers()
-//   .then((offers) => {
-//     // tripContentPresenter.setDestinations(destinations);
-//   });

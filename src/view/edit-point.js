@@ -213,7 +213,7 @@ export default class EditingTripPoint extends SmartView {
       isFavorite: false,
     };
   }
-  static parseTripPointToData(trip) { // обратиться к функции filerOffersByType чтобы была инфа о вскх возможных офферах новое поле лоя т редактт
+  static parseTripPointToData(trip) {
     return Object.assign(
         {},
         trip,
@@ -302,7 +302,7 @@ export default class EditingTripPoint extends SmartView {
     });
   }
   _setInnerHandlers() {
-    this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeTripChangeHandler); // здесь срабатывает только input or change
+    this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeTripChangeHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
     this.getElement().querySelectorAll(`.event__offer-checkbox`).forEach((offerCheckbox) => {
@@ -313,8 +313,8 @@ export default class EditingTripPoint extends SmartView {
     this._setInnerHandlers();
     this._setStartDatepicker();
     this._setEndtDatepicker();
-    this.setEditFormSubmitHandler(this._callback.editFormSubmit); // зачем нам их восстанавливать, зачем
-    this.setCloseFormHandler(this._callback.editFormClose); // зачем нам восстанавливтаь их
+    this.setEditFormSubmitHandler(this._callback.editFormSubmit);
+    this.setCloseFormHandler(this._callback.editFormClose);
     this.setDeleteClickHandler(this._callback.deleteClick);
   }
   _priceInputHandler(evt) {
@@ -380,11 +380,6 @@ export default class EditingTripPoint extends SmartView {
       this._endDatepicker = null;
     }
   }
-  // reset(trip) {
-  //   this.updateData({
-  //     EditingTripPoint.parseTripPointToData(trip)
-  //   })
-  // }
   getTemplate() {
     return createEditingPointTemplate(this._data, this._destinations, this._offers);
   }

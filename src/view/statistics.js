@@ -27,7 +27,6 @@ const createStatisticsTemplate = () => {
 const renderMoneyChart = (moneyCtx, trips) => {
   const tripsTypes = trips.map((trip) => trip.typeTripPoint);
   const uniqTripTypes = makeItemsUniq(tripsTypes);
-  // const uniqTripTypesUpperCase = uniqTripTypes.forEach((trip) => trip.toUpperCase());
   const calculatePricesByTripTypes = () => {
     let pricesArray = [];
     uniqTripTypes.forEach((uniqTripType) => {
