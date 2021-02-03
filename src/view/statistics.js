@@ -5,6 +5,7 @@ import {makeItemsUniq} from "../utils/statistics-utils.js";
 import {getDurationInDays} from "./date-formatting.js";
 
 const BAR_HEIGHT = 55;
+const VALUES_X_LENGTH = 10;
 
 const createStatisticsTemplate = () => {
   return `<section class="statistics">
@@ -317,9 +318,9 @@ export default class Statistics extends SmartView {
     const timeCtx = this.getElement().querySelector(`.statistics__chart--time`);
 
 
-    moneyCtx.height = BAR_HEIGHT * 10;
-    typeCtx.height = BAR_HEIGHT * 10;
-    timeCtx.height = BAR_HEIGHT * 10;
+    moneyCtx.height = BAR_HEIGHT * VALUES_X_LENGTH;
+    typeCtx.height = BAR_HEIGHT * VALUES_X_LENGTH;
+    timeCtx.height = BAR_HEIGHT * VALUES_X_LENGTH;
 
     this._typeChart = renderTypeChart(typeCtx, this._data);
     this._moneyChart = renderMoneyChart(moneyCtx, this._data);
