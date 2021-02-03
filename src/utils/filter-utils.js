@@ -9,4 +9,5 @@ export const filter = {
   },
   [FilterType.FUTURE]: (trips) => trips.filter((trip) => trip.startDate.isAfter(today)),
   [FilterType.PAST]: (trips) => trips.filter((trip) => trip.endDate.isBefore(today))
-}
+};
+
