@@ -3,6 +3,7 @@ import SmartView from "./smart-view.js";
 import flatpickr from "flatpickr";
 import dayjs from "dayjs";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+import he from "he";
 
 export const generateTripsTypesOptions = (isDisabled) => {
   return types.map((tripType) => `<div class="event__type-item">
@@ -124,7 +125,7 @@ const createEditingPointTemplate = (data, destinations, offers) => {
             id="event-destination-1"
             type="text"
             name="event-destination"
-            value="${destination ? destination.name : ``}"
+            value="${he.encode(destination ? destination.name : ``)}"
             list="destination-list-1"
             ${isDisabled ? `disabled` : ``}
           >
@@ -151,7 +152,7 @@ const createEditingPointTemplate = (data, destinations, offers) => {
             id="event-price-1"
             type="text"
             name="event-price"
-            value="${price}" ${isDisabled ? `disabled` : ``}
+            value="${he.encode(price.toString())}" ${isDisabled ? `disabled` : ``}
           >
         </div>
 
