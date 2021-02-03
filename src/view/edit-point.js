@@ -269,10 +269,10 @@ export default class EditingTripPoint extends SmartView {
     this._datepicker = flatpickr(
         this.getElement().querySelector(`#event-start-time-1`),
         {
-          enableTime: true,
-          time_24hr: true, // eslint-disable-line
-          defaultDate: this._data.startDate ? this._data.startDate.toDate() : null,
-          onChange: this._startDateChangeHandler
+          'enableTime': true,
+          'time_24hr': true,
+          'defaultDate': this._data.startDate ? this._data.startDate.toDate() : null,
+          'onChange': this._startDateChangeHandler
         }
     );
   }
@@ -285,10 +285,10 @@ export default class EditingTripPoint extends SmartView {
     this._endDatepicker = flatpickr(
         this.getElement().querySelector(`#event-end-time-1`),
         {
-          enableTime: true,
-          time_24hr: true, // eslint-disable-line
-          defaultDate: this._data.endDate ? this._data.endDate.toDate() : null,
-          onChange: this._endDateChangeHandler
+          'enableTime': true,
+          'time_24hr': true,
+          'defaultDate': this._data.endDate ? this._data.endDate.toDate() : null,
+          'onChange': this._endDateChangeHandler
         }
     );
   }
