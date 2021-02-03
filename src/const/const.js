@@ -57,7 +57,8 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: `PATCH`,
   MINOR: `MINOR`,
-  MAJOR: `MAJOR`
+  MAJOR: `MAJOR`,
+  INIT: `INIT`
 };
 
 export const FilterType = {
@@ -66,3 +67,8 @@ export const FilterType = {
   PAST: `past`
 };
 
+export const MenuItem = {
+  NEW_EVENT: `NEW_EVENT`,
+  TABLE: `TABLE`,
+  STATS: `STATS`
+};

@@ -1,30 +1,39 @@
-import {formatDatePointEditing} from "./date-formatting";
 import {types} from "../const/const.js";
-import Abstract from "./abstract.js";
+import SmartView from "./smart-view.js";
 import flatpickr from "flatpickr";
 import dayjs from "dayjs";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 import he from "he";
 
-import "../../node_modules/flatpickr/dist/flatpickr.min.css";
-
-const generateTripsTypesOptions = () => {
+export const generateTripsTypesOptions = (isDisabled) => {
   return types.map((tripType) => `<div class="event__type-item">
-    <input id="event-type-${tripType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${tripType}" >
-    <label class="event__type-label  event__type-label--${tripType}" for="event-type-${tripType}-1">${tripType[0].toUpperCase() + tripType.substring(1)}</label>
+    <input
+      id="event-type-${tripType}-1"
+      class="event__type-input  visually-hidden"
+      type="radio"
+      name="event-type"
+      value="${tripType}"
+      ${isDisabled ? `disabled` : ``}" >
+    <label
+      class="event__type-label  event__type-label--${tripType}"
+      for="event-type-${tripType}-1">${tripType[0].toUpperCase() + tripType.substring(1)}
+    </label>
   </div>`).join(``);
 };
 
-const generateDestinations = (destinations) => {
-  return destinations.map((destinationValue) => `<option value="${destinationValue.name}"></option>`).join(``);
+export const generateDestinations = (destinations, isDisabled) => {
+  return destinations.map((destinationValue) => (
+    `<option value="${destinationValue.name}" ${isDisabled ? `disabled` : ``}></option>`
+  )).join(``);
 };
 
-const findOffersByType = (allPossibleoffers, type) => {
+export const findOffersByType = (allPossibleoffers, type) => {
   return allPossibleoffers.find((offer) => {
     return offer.type === type;
   });
 };
 
-const renderOfferSelector = (offer, index, appliedOffersFromTripPoint) => {
+const renderOfferSelector = (offer, index, appliedOffersFromTripPoint, isDisabled) => {
   const isChecked = appliedOffersFromTripPoint.find(
       (appliedOffer) => appliedOffer.title === offer.title
   );
@@ -38,6 +47,7 @@ const renderOfferSelector = (offer, index, appliedOffersFromTripPoint) => {
       name="event-offer-${offer.title}"
       value="${offer.title}"
       ${isChecked ? `checked` : ``}
+      ${isDisabled ? `disabled` : ``}
     >
     <label class="event__offer-label" for="${checkboxId}">
       <span class="event__offer-title">${offer.title}</span>
@@ -47,10 +57,13 @@ const renderOfferSelector = (offer, index, appliedOffersFromTripPoint) => {
   </div>`;
 };
 
-const generateOffersTemplate = (allPossibleoffers, appliedOffersFromTripPoint, type) => { // проблемв с id, я пока им присвоила offer.title
+const generateOffersTemplate = (allPossibleoffers, appliedOffersFromTripPoint, type, isDisabled) => {
   const offersFilteredBytype = findOffersByType(allPossibleoffers, type);
-  return offersFilteredBytype.allOffers.map((offer, index) => {
-    return renderOfferSelector(offer, index, appliedOffersFromTripPoint);
+  if (!offersFilteredBytype) {
+    throw new Error(`Cannot find offers group with '${type}' type`);
+  }
+  return offersFilteredBytype.offers.map((offer, index) => {
+    return renderOfferSelector(offer, index, appliedOffersFromTripPoint, isDisabled);
   })
   .join(``);
 };
@@ -61,10 +74,13 @@ const generateImageTemplate = (pictures) => {
   }).join(``);
 };
 
-const createDestionationInfoTemplate = (destinationName, destinations) => {
-  const foundDestinationInfo = destinations.find((destination) => {
-    return destination.name === destinationName;
+const createDestionationInfoTemplate = (destination, destinations) => {
+  const foundDestinationInfo = destinations.find((_destination) => {
+    return _destination.name === destination.name;
   });
+  if (!foundDestinationInfo) {
+    throw new Error(`Cannot find a destination with '${destination.name}' name`);
+  }
   return `
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -79,8 +95,8 @@ const createDestionationInfoTemplate = (destinationName, destinations) => {
   `;
 };
 
-const createEditingPointTemplate = (data, destinations, offers) => { // можно ли тут оставить pointTrip? почему здесь data
-  const {appliedOffers, startDate, endDate, typeTripPoint, destination, price} = data;
+const createEditingPointTemplate = (data, destinations, offers) => {
+  const {appliedOffers, typeTripPoint, destination, price, isDisabled, isSaving, isDeleting} = data;
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -89,7 +105,8 @@ const createEditingPointTemplate = (data, destinations, offers) => { // можн
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${typeTripPoint}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox"
+          ${isDisabled ? `disabled` : ``}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -103,9 +120,17 @@ const createEditingPointTemplate = (data, destinations, offers) => { // можн
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeTripPoint}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1">
+          <input
+            class="event__input  event__input--destination"
+            id="event-destination-1"
+            type="text"
+            name="event-destination"
+            value="${he.encode(destination ? destination.name : ``)}"
+            list="destination-list-1"
+            ${isDisabled ? `disabled` : ``}
+          >
           <datalist id="destination-list-1">
-            ${generateDestinations(destinations)}
+            ${generateDestinations(destinations, isDisabled)}
           </datalist>
         </div>
 
@@ -122,12 +147,22 @@ const createEditingPointTemplate = (data, destinations, offers) => { // можн
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input
+            class="event__input  event__input--price"
+            id="event-price-1"
+            type="text"
+            name="event-price"
+            value="${he.encode(price.toString())}" ${isDisabled ? `disabled` : ``}
+          >
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? `disabled` : ``}>
+          ${isSaving ? `saving...` : `save`}
+        </button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? `disabled` : ``}>
+          ${isDeleting ? `deleting...` : `delete`}
+        </button>
+        <button class="event__rollup-btn" type="button" ${isDisabled ? `disabled` : ``}>
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -140,19 +175,19 @@ const createEditingPointTemplate = (data, destinations, offers) => { // можн
           </div>
         </section>
 
-        ${createDestionationInfoTemplate(destination, destinations)}
+        ${destination && createDestionationInfoTemplate(destination, destinations)}
       </section>
     </form>
   </li>`;
 };
 
-export default class EditingTripPoint extends Abstract {
+export default class EditingTripPoint extends SmartView {
   constructor(tripData, destinations, offers) {
     super();
     this._destinations = destinations;
     this._offers = offers;
-    // this._tripData = tripData;
-    this._data = EditingTripPoint.parseTripPointToData(tripData);
+    const newTrip = EditingTripPoint.generateNewTrip(destinations);
+    this._data = EditingTripPoint.parseTripPointToData(tripData || newTrip);
     this._datepicker = null;
     this._endDatepicker = null;
     this._editFormSubmitHandler = this._editFormSubmitHandler.bind(this);
@@ -168,62 +203,60 @@ export default class EditingTripPoint extends Abstract {
     this._setStartDatepicker();
     this._setEndtDatepicker();
   }
-  static parseTripPointToData(trip) { // обратиться к функции filerOffersByType чтобы была инфа о вскх возможных офферах новое поле лоя т редактт
+  static generateNewTrip(destinations) {
+    return {
+      typeTripPoint: `taxi`,
+      destination: destinations[0],
+      startDate: null,
+      endDate: null,
+      price: 0,
+      appliedOffers: [],
+      isFavorite: false,
+    };
+  }
+  static parseTripPointToData(trip) {
     return Object.assign(
         {},
-        trip
-    ); // не хватает условий
+        trip,
+        {
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false
+        }
+    );
   }
   static parseDataToTripPoint(data) {
-    return Object.assign(
+    data = Object.assign(
         {},
         data
-    ); // не хватает условий
-  }
-  updateData(newData, justDataUpdating) {
-    if (!newData) {
-      return;
-    }
-    this._data = Object.assign(
-        {},
-        this._data,
-        newData
     );
-    if (justDataUpdating) {
-      return;
-    }
-    this.updateElement();
-  }
-  updateElement() {
-    let previousELement = this.getElement();
-    const parent = previousELement.parentElement;
-    this.removeElement();
-    const newElement = this.getElement();
-    parent.replaceChild(newElement, previousELement);
-    this.restoreHandlers();
+    delete data.isDisabled;
+    delete data.isSaving;
+    delete data.isDeleting;
+
+    return data;
   }
 
   _typeTripChangeHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      typeTripPoint: evt.target.value
+      typeTripPoint: evt.target.value,
+      appliedOffers: []
     });
   }
   _destinationChangeHandler(evt) {
     evt.preventDefault();
     const newDestinationName = evt.target.value;
-    console.log('_destinationChangeHandler', newDestinationName)
-    const isCorrectValue = this._destinations.some((destination) => {
-      return destination.name === newDestinationName
-    })
-    console.log('isCorrectValue', isCorrectValue)
-    if (isCorrectValue) {
+    const foundDestination = this._destinations.find((destination) => {
+      return destination.name === newDestinationName;
+    });
+    if (foundDestination) {
       this.updateData({
-        destination: newDestinationName
+        destination: foundDestination
       });
       evt.target.setCustomValidity(``);
     } else {
-      evt.target.setCustomValidity(`Введенное значение должно соответсвовать одному из вариантов из списка`); //works only with enter, если просто написать что-то и убрать курсор то оно пропускает это значение
+      evt.target.setCustomValidity(`Введенное значение должно соответсвовать одному из вариантов из списка`);
     }
     evt.target.reportValidity();
   }
@@ -232,15 +265,14 @@ export default class EditingTripPoint extends Abstract {
       this._datepicker.destroy();
       this._datepicker = null;
     }
-    // console.log(`tripData.startDate`, this._data.startDate.toDate());
+
     this._datepicker = flatpickr(
         this.getElement().querySelector(`#event-start-time-1`),
         {
-          // dateFormat: `d/m/Y H:i`,
           enableTime: true,
-          time_24hr: true,
-          defaultDate: this._data.startDate.toDate(), // если не ставлю дефолтное время не меняяется время в инпуте
-          onChange: this._startDateChangeHandler // На событие flatpickr передаём наш колбэк
+          time_24hr: true, // eslint-disable-line
+          defaultDate: this._data.startDate ? this._data.startDate.toDate() : null,
+          onChange: this._startDateChangeHandler
         }
     );
   }
@@ -253,10 +285,9 @@ export default class EditingTripPoint extends Abstract {
     this._endDatepicker = flatpickr(
         this.getElement().querySelector(`#event-end-time-1`),
         {
-          // dateFormat: `d/m/Y H:i`,
           enableTime: true,
-          time_24hr: true,
-          defaultDate: this._data.endDate.toDate(), // если не ставлю дефолтное время не меняяется время в инпуте
+          time_24hr: true, // eslint-disable-line
+          defaultDate: this._data.endDate ? this._data.endDate.toDate() : null,
           onChange: this._endDateChangeHandler
         }
     );
@@ -272,7 +303,7 @@ export default class EditingTripPoint extends Abstract {
     });
   }
   _setInnerHandlers() {
-    this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeTripChangeHandler); // здесь срабатывает только input or change
+    this.getElement().querySelector(`.event__type-group`).addEventListener(`change`, this._typeTripChangeHandler);
     this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, this._priceInputHandler);
     this.getElement().querySelector(`.event__input--destination`).addEventListener(`change`, this._destinationChangeHandler);
     this.getElement().querySelectorAll(`.event__offer-checkbox`).forEach((offerCheckbox) => {
@@ -283,21 +314,21 @@ export default class EditingTripPoint extends Abstract {
     this._setInnerHandlers();
     this._setStartDatepicker();
     this._setEndtDatepicker();
-    this.setEditFormSubmitHandler(this._callback.editFormSubmit); // зачем нам их восстанавливать, зачем this._callback.editFormSubmit
-    this.setEditFormCloseHandler(this._callback.editFormClose); // зачем нам восстанавливтаь их
+    this.setEditFormSubmitHandler(this._callback.editFormSubmit);
+    this.setCloseFormHandler(this._callback.editFormClose);
     this.setDeleteClickHandler(this._callback.deleteClick);
   }
   _priceInputHandler(evt) {
     evt.preventDefault();
     this.updateData({
-      price: evt.target.value
-    }, true); // justDataUpdating = true
+      price: parseInt(evt.target.value, 10)
+    }, true);
   }
   _offersCheckboxHandler(evt) {
     const offerTitle = evt.target.value;
     const isSelected = evt.target.checked;
     const offerGroupOfCurrentType = this._offers.find((offerGroup) => offerGroup.type === this._data.typeTripPoint);
-    const currentOffer = offerGroupOfCurrentType.allOffers.find((offer) => offer.title === offerTitle);
+    const currentOffer = offerGroupOfCurrentType.offers.find((offer) => offer.title === offerTitle);
     if (isSelected) {
       const newSelectedOffers = [
         ...this._data.appliedOffers,
@@ -330,7 +361,7 @@ export default class EditingTripPoint extends Abstract {
     this._callback.editFormSubmit = callback;
     this.getElement().querySelector(`form`).addEventListener(`submit`, this._editFormSubmitHandler);
   }
-  setEditFormCloseHandler(callback) {
+  setCloseFormHandler(callback) {
     this._callback.editFormClose = callback;
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, this._editFormCloseHandler);
   }
@@ -350,11 +381,6 @@ export default class EditingTripPoint extends Abstract {
       this._endDatepicker = null;
     }
   }
-  // reset(trip) {
-  //   this.updateData({
-  //     EditingTripPoint.parseTripPointToData(trip)
-  //   })
-  // }
   getTemplate() {
     return createEditingPointTemplate(this._data, this._destinations, this._offers);
   }

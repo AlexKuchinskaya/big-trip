@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import Observer from "../utils/observer.js";
 
 export default class TripsModel extends Observer {
@@ -6,8 +7,9 @@ export default class TripsModel extends Observer {
     this._trips = [];
   }
 
-  setTrips(trips) {
+  setTrips(updateType, trips) {
     this._trips = trips.slice();
+    this._notify(updateType);
   }
 
   getTrips() {
@@ -52,5 +54,63 @@ export default class TripsModel extends Observer {
     ];
 
     this._notify(updateType);
+  }
+
+  static adaptToClient(trip) {
+    const adaptedTrip = Object.assign(
+        {},
+        trip,
+        {
+          typeTripPoint: trip.type,
+          startDate: trip.date_from ? dayjs(trip.date_from) : null,
+          endDate: trip.date_to ? dayjs(trip.date_to) : null,
+          price: trip.base_price,
+          isFavorite: trip.is_favorite,
+          appliedOffers: trip.offers,
+        }
+    );
+
+    delete adaptedTrip.type;
+    delete adaptedTrip.date_from;
+    delete adaptedTrip.date_to;
+    delete adaptedTrip.is_favorite;
+    delete adaptedTrip.base_price;
+    delete adaptedTrip.offers;
+    return adaptedTrip;
+  }
+
+  static adaptToServer(trip) {
+    const adaptedTrip = Object.assign(
+        {},
+        trip,
+        {
+          "type": trip.typeTripPoint,
+          "date_from": trip.startDate ? trip.startDate.toISOString() : null,
+          "date_to": trip.endDate ? trip.endDate.toISOString() : null,
+          "base_price": trip.price,
+          "is_favorite": trip.isFavorite,
+          "offers": trip.appliedOffers
+        }
+    );
+
+    delete adaptedTrip.typeTripPoint;
+    delete adaptedTrip.startDate;
+    delete adaptedTrip.endDate;
+    delete adaptedTrip.isFavorite;
+    delete adaptedTrip.price;
+    delete adaptedTrip.appliedOffers;
+
+    return adaptedTrip;
+  }
+
+  static adaptOffersToClient(offer) {
+    const adaptedOffer = Object.assign(
+        {},
+        offer,
+        {
+          offers: offer.offers
+        }
+    );
+    return adaptedOffer;
   }
 }
